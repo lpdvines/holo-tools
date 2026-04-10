@@ -5,15 +5,15 @@ Internal tool platform for HOLO Digital Ltd, a UK marketing agency.
 Built with Node.js + Express. Served from Docker on Unraid via Cloudflare Tunnel.
 
 ## Current Phase
-**Phase 1 complete** — Dashboard + project setup done.
-Next: **Phase 2** — Google Ads Copy Generator (Claude API only)
+**Phases 1-3 complete.** Content generator has batch mode, blog posts, formatted docs, auto-tracking sheets, usage dashboard.
+Next: **Phase 4** — Email Digest (Gmail API + node-cron)
 
 ## Phase Roadmap
 - Phase 1: Project setup + Dashboard UI + GitHub workflow ✅
-- Phase 2: Tool 1 — Google Ads Copy Generator (Claude API only)
-- Phase 3: Tool 2 — Content Generator (Claude API + Google Drive + Excel tracking)
+- Phase 2: Tool 1 — Google Ads Copy Generator ✅
+- Phase 3: Tool 2 — Content Generator (location pages, blog posts, Drive integration, tracking sheets) ✅
 - Phase 4: Tool 3 — Email Digest (Gmail API + node-cron scheduler)
-- Phase 5: Drive + Trello integration across all tools
+- Phase 5: Trello integration across all tools
 
 ## Rules
 - British English throughout — no American spellings

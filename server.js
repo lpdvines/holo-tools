@@ -55,6 +55,27 @@ app.get('/api/usage', (req, res) => {
   }
 });
 
+// ── Roadmap ───────────────────────────────────────────────────────────────────
+
+const ROADMAP_FILE = path.join(__dirname, 'roadmap.json');
+
+function loadRoadmap() {
+  try {
+    return JSON.parse(fs.readFileSync(ROADMAP_FILE, 'utf8'));
+  } catch {
+    return [];
+  }
+}
+
+app.get('/api/roadmap', (req, res) => {
+  res.json(loadRoadmap());
+});
+
+app.put('/api/roadmap', (req, res) => {
+  fs.writeFileSync(ROADMAP_FILE, JSON.stringify(req.body, null, 2));
+  res.json({ success: true });
+});
+
 // ── Google Ads Copy ───────────────────────────────────────────────────────────
 
 app.post('/api/generate/ads', async (req, res) => {

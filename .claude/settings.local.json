@@ -14,7 +14,9 @@
       "WebSearch",
       "Bash(curl -s http://localhost:3000/api/usage)",
       "Bash(node -e \"process.stdin.on\\('data',d=>{JSON.parse\\(d\\).forEach\\(c=>console.log\\(c.name,':',c.googleTrackingSheetId||'NO SHEET'\\)\\)}\\)\")",
-      "Bash(node -e \"const d=[];process.stdin.on\\('data',c=>d.push\\(c\\)\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(Buffer.concat\\(d\\)\\);j.calls.forEach\\(c=>console.log\\(c.tool, c.clientName, 'in:', c.inputTokens, 'out:', c.outputTokens, 'cost:', c.costUSD, 'model:', c.model\\)\\)}\\)\")"
+      "Bash(node -e \"const d=[];process.stdin.on\\('data',c=>d.push\\(c\\)\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(Buffer.concat\\(d\\)\\);j.calls.forEach\\(c=>console.log\\(c.tool, c.clientName, 'in:', c.inputTokens, 'out:', c.outputTokens, 'cost:', c.costUSD, 'model:', c.model\\)\\)}\\)\")",
+      "Bash(curl -s http://localhost:3000/api/roadmap)",
+      "Bash(node -e \"const d=[];process.stdin.on\\('data',c=>d.push\\(c\\)\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(Buffer.concat\\(d\\)\\);console.log\\('Total tasks:',j.length\\);console.log\\('Done:',j.filter\\(t=>t.status==='done'\\).length\\);console.log\\('Planned:',j.filter\\(t=>t.status==='planned'\\).length\\)}\\)\")"
     ]
   }
 }

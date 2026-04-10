@@ -1,0 +1,146 @@
+[
+  {
+    "id": "done-ads",
+    "title": "Google Ads Copy Generator",
+    "description": "Generate headlines and descriptions tailored to each client's tone of voice with character limit checks.",
+    "priority": "high",
+    "status": "done",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "done-content",
+    "title": "Content Generator",
+    "description": "Location pages, blog posts, batch generation, Drive integration, auto-tracking sheets, formatted Google Docs.",
+    "priority": "high",
+    "status": "done",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "done-usage",
+    "title": "API Usage Dashboard",
+    "description": "Track Claude API spend per tool, per client, with daily chart on the homepage.",
+    "priority": "medium",
+    "status": "done",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "done-roadmap",
+    "title": "Roadmap Tracker",
+    "description": "Drag-and-drop board to track tool ideas from Planned to Done.",
+    "priority": "medium",
+    "status": "done",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-email",
+    "title": "Email Digest",
+    "description": "Morning email briefing. Summarise unread client emails and draft replies in Laurence's voice.",
+    "priority": "high",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-meta",
+    "title": "Meta Title & Description Generator",
+    "description": "Bulk generate meta titles (60 char) and descriptions (155 char) from a sitemap URL. Flag missing or too-long ones.",
+    "priority": "high",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-gbp",
+    "title": "Google Business Profile Post Writer",
+    "description": "Generate weekly GBP posts per client with CTA and image suggestion. Publish directly via GBP API.",
+    "priority": "high",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-social",
+    "title": "Social Media Post Generator + Scheduler",
+    "description": "Generate posts and publish/schedule to Facebook and Instagram via Meta Graph API.",
+    "priority": "high",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-leads",
+    "title": "Facebook Ads Lead Downloader",
+    "description": "Auto-download leads from Facebook Ads Manager. Notify or push to a sheet instead of manually checking every few days.",
+    "priority": "high",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-keywords",
+    "title": "Keyword Clustering Tool",
+    "description": "Paste keywords from SEMrush/Ahrefs. Claude groups them into page-level clusters and suggests target pages.",
+    "priority": "medium",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-gsc",
+    "title": "Google Search Console Integration",
+    "description": "Pull keyword rankings, clicks, impressions per page per client. Feed into reports and content decisions.",
+    "priority": "medium",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-ga4",
+    "title": "Google Analytics (GA4) Integration",
+    "description": "Pull traffic and conversion data per client for reporting.",
+    "priority": "medium",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-reports",
+    "title": "Monthly Report Generator",
+    "description": "Pull from tracking sheets and analytics, auto-write narrative. Laurence adds stats manually.",
+    "priority": "medium",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-competitor",
+    "title": "Competitor Content Gap Finder",
+    "description": "Input competitor URL, scrape their pages, compare against client's content, suggest missing topics.",
+    "priority": "medium",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-intlinks",
+    "title": "Internal Linking Suggester",
+    "description": "For a given page, scan client's existing content and suggest where internal links should be added.",
+    "priority": "low",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-schema",
+    "title": "Schema Markup Generator",
+    "description": "Select client + page type (local business, FAQ, service), generate JSON-LD structured data.",
+    "priority": "low",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-alt",
+    "title": "Alt Text Generator",
+    "description": "Upload or link images, generate SEO-friendly alt text in the client's tone.",
+    "priority": "low",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  },
+  {
+    "id": "plan-trello",
+    "title": "Trello Integration",
+    "description": "Create Trello cards for VA when content is generated. Card includes doc link, page title, URL slug.",
+    "priority": "low",
+    "status": "planned",
+    "createdAt": "2026-04-10"
+  }
+]
