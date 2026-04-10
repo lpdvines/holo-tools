@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Ads Copy — HOLO Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .form-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 32px;
+      max-width: 640px;
+    }
+
+    .form-row {
+      margin-bottom: 20px;
+    }
+
+    .form-row label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .form-row select,
+    .form-row input,
+    .form-row textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-row select:focus,
+    .form-row input:focus,
+    .form-row textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .form-row textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* Results */
+    .results-section {
+      display: none;
+    }
+
+    .results-section.visible {
+      display: block;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .results-title {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      margin-top: 28px;
+    }
+
+    .section-label:first-of-type {
+      margin-top: 0;
+    }
+
+    .copy-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .copy-item:last-child {
+      border-bottom: none;
+    }
+
+    .copy-text {
+      flex: 1;
+      font-size: 14px;
+      line-height: 1.5;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 4px 8px;
+      outline: none;
+      font-family: inherit;
+      color: var(--text);
+      background: transparent;
+      resize: none;
+      min-height: 28px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .copy-text:focus {
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+    .char-count {
+      font-size: 12px;
+      font-weight: 600;
+      min-width: 36px;
+      text-align: right;
+      padding-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .char-ok { color: #16a34a; }
+    .char-warn { color: #ca8a04; }
+    .char-over { color: #dc2626; }
+
+    .copy-actions {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+      padding-top: 4px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-family: inherit;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .icon-btn.copied {
+      border-color: #16a34a;
+      color: #16a34a;
+    }
+
+    /* Loading state */
+    .loading-overlay {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .loading-overlay.visible {
+      display: flex;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-msg {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 16px;
+    }
+
+    .error-msg.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="logo" href="/">HOLO <span>Digital</span></a>
+    <span class="header-tag">Google Ads Copy</span>
+  </header>
+
+  <main>
+    <h1 class="page-title">Google Ads Copy Generator</h1>
+    <p class="page-subtitle">Generate headlines and descriptions tailored to each client.</p>
+
+    <div class="form-card">
+      <div class="form-row">
+        <label for="client">Client</label>
+        <select id="client">
+          <option value="">Loading clients…</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label for="service">Service</label>
+        <input type="text" id="service" placeholder="e.g. Estate agent boards">
+      </div>
+
+      <div class="form-row">
+        <label for="location">Location</label>
+        <input type="text" id="location" placeholder="e.g. South London">
+      </div>
+
+      <div class="form-row">
+        <label for="notes">Additional notes <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+        <textarea id="notes" placeholder="Any specific angles, promotions or requirements…"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" id="generate-btn" onclick="generate()">Generate Copy</button>
+        <div class="loading-overlay" id="loading">
+          <div class="spinner"></div>
+          Generating…
+        </div>
+      </div>
+
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-section" id="results">
+      <div class="results-header">
+        <div class="results-title">Generated Copy</div>
+        <button class="btn btn-primary" onclick="generate()" style="font-size:13px;padding:7px 16px;">Regenerate</button>
+      </div>
+
+      <div class="section-label">Headlines <span style="font-weight:400;text-transform:none;letter-spacing:0">(max 30 characters)</span></div>
+      <div id="headlines-list"></div>
+
+      <div class="section-label" style="margin-top:28px">Descriptions <span style="font-weight:400;text-transform:none;letter-spacing:0">(max 90 characters)</span></div>
+      <div id="descriptions-list"></div>
+    </div>
+  </main>
+
+  <script>
+    let clients = [];
+
+    // Load clients on page load
+    async function loadClients() {
+      try {
+        const res = await fetch('/api/clients');
+        clients = await res.json();
+        const select = document.getElementById('client');
+        select.innerHTML = '<option value="">Select a client…</option>' +
+          clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      } catch (e) {
+        document.getElementById('client').innerHTML = '<option value="">Failed to load clients</option>';
+      }
+    }
+
+    async function generate() {
+      const clientId = document.getElementById('client').value;
+      const service = document.getElementById('service').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const notes = document.getElementById('notes').value.trim();
+
+      const errorEl = document.getElementById('error-msg');
+      errorEl.classList.remove('visible');
+
+      if (!clientId || !service || !location) {
+        errorEl.textContent = 'Please select a client and fill in the service and location fields.';
+        errorEl.classList.add('visible');
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const res = await fetch('/api/generate/ads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientId, service, location, notes })
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Generation failed');
+        }
+
+        const data = await res.json();
+        renderResults(data);
+      } catch (e) {
+        errorEl.textContent = e.message || 'Something went wrong. Please try again.';
+        errorEl.classList.add('visible');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderResults({ headlines, descriptions }) {
+      document.getElementById('headlines-list').innerHTML =
+        headlines.map((h, i) => copyItem(h, 30, `h-${i}`)).join('');
+
+      document.getElementById('descriptions-list').innerHTML =
+        descriptions.map((d, i) => copyItem(d, 90, `d-${i}`)).join('');
+
+      document.getElementById('results').classList.add('visible');
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      // Attach input listeners
+      document.querySelectorAll('.copy-text').forEach(el => {
+        updateCharCount(el);
+        el.addEventListener('input', () => updateCharCount(el));
+        // Auto-resize textarea
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+        el.addEventListener('input', function () {
+          this.style.height = 'auto';
+          this.style.height = this.scrollHeight + 'px';
+        });
+      });
+    }
+
+    function copyItem(text, limit, id) {
+      return `
+        <div class="copy-item">
+          <textarea class="copy-text" id="item-${id}" data-limit="${limit}" rows="1">${escapeHtml(text)}</textarea>
+          <span class="char-count" id="count-${id}"></span>
+          <div class="copy-actions">
+            <button class="icon-btn" title="Copy" onclick="copyToClipboard('item-${id}', this)">Copy</button>
+          </div>
+        </div>`;
+    }
+
+    function updateCharCount(el) {
+      const limit = parseInt(el.dataset.limit);
+      const len = el.value.length;
+      const countEl = document.getElementById('count-' + el.id.replace('item-', ''));
+      if (!countEl) return;
+      countEl.textContent = len;
+      countEl.className = 'char-count ' + (len > limit ? 'char-over' : len > limit * 0.9 ? 'char-warn' : 'char-ok');
+    }
+
+    function copyToClipboard(id, btn) {
+      const text = document.getElementById(id).value;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    }
+
+    function setLoading(on) {
+      document.getElementById('loading').classList.toggle('visible', on);
+      document.getElementById('generate-btn').disabled = on;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    loadClients();
+  </script>
+</body>
+</html>

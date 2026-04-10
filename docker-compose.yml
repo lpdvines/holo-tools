@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  holo-tools:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./clients.json:/app/clients.json
+    restart: unless-stopped

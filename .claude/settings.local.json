@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(node -e \"require\\('dotenv'\\).config\\(\\); const {generateAdsCopy} = require\\('./src/claude'\\); generateAdsCopy\\({clientData:{name:'Kremer Signs',industry:'Sign manufacturing',toneOfVoice:'Professional, reliable',keyMessages:['Fast turnaround','UK manufactured'],avoidPhrases:[],services:[]},service:'estate agent boards',location:'South London',notes:''}\\).then\\(r=>console.log\\(JSON.stringify\\(r,null,2\\)\\)\\).catch\\(e=>console.error\\(e.message\\)\\)\")",
+      "Bash(node server.js)",
+      "Bash(curl -s http://localhost:3000/api/clients)",
+      "Bash(curl -s http://localhost:3000/tools/ads.html)",
+      "Bash(curl -s http://localhost:3000/api/drive/files/kremer-signs)",
+      "Bash(node -e ':*)"
+    ]
+  }
+}

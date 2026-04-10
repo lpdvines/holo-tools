@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Generator — HOLO Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      max-width: 720px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .form-row {
+      margin-bottom: 16px;
+    }
+
+    .form-row label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .form-row select,
+    .form-row input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-row select:focus,
+    .form-row input:focus {
+      border-color: var(--accent);
+    }
+
+    .type-toggle {
+      display: flex;
+      gap: 8px;
+    }
+
+    .type-btn {
+      flex: 1;
+      padding: 9px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      text-align: center;
+    }
+
+    .type-btn.active {
+      border-color: var(--accent);
+      background: #fff0f4;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Drive status */
+    .drive-status {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .drive-status.visible { display: block; }
+    .drive-status.info { background: #f0f9ff; border: 1px solid #bae6fd; color: #0369a1; }
+    .drive-status.warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    .drive-status.success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+
+    .drive-status a {
+      color: inherit;
+      font-weight: 600;
+    }
+
+    .suggestion-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .suggestion-row span { flex: 1; }
+
+    .suggestion-row .use-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 5px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    /* Existing docs */
+    .docs-list {
+      margin-top: 12px;
+    }
+
+    .doc-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .doc-item:last-child { border-bottom: none; }
+
+    .doc-item a {
+      color: var(--text);
+      text-decoration: none;
+      flex: 1;
+    }
+
+    .doc-item a:hover { color: var(--accent); }
+
+    .doc-icon { font-size: 15px; flex-shrink: 0; }
+
+    /* Content preview */
+    .content-preview {
+      font-size: 14px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--bg-subtle);
+      font-family: inherit;
+      width: 100%;
+      min-height: 400px;
+      outline: none;
+      resize: vertical;
+      color: var(--text);
+    }
+
+    .content-preview:focus {
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .meta-item label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .meta-item p {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .meta-item .nav-note {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .word-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Actions */
+    .action-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* Loading */
+    .loading-overlay {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .loading-overlay.visible { display: flex; }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .error-msg.visible { display: block; }
+
+    .hidden { display: none !important; }
+
+    /* Saved confirmation */
+    .saved-banner {
+      display: none;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #15803d;
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .saved-banner.visible { display: block; }
+    .saved-banner a { color: #15803d; font-weight: 600; }
+
+    .docs-toggle {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 0;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="logo" href="/">HOLO <span>Digital</span></a>
+    <span class="header-tag">Content Generator</span>
+  </header>
+
+  <main>
+    <h1 class="page-title">Content Generator</h1>
+    <p class="page-subtitle">Generate SEO location and service pages for clients.</p>
+
+    <!-- Step 1: Client + type -->
+    <div class="panel" id="setup-panel">
+      <div class="form-row">
+        <label for="client">Client</label>
+        <select id="client" onchange="onClientChange()">
+          <option value="">Select a client…</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Content type</label>
+        <div class="type-toggle">
+          <button class="type-btn active" id="btn-location" onclick="setType('location')">📍 Location page</button>
+          <button class="type-btn" id="btn-service" onclick="setType('service')">🔧 Service page</button>
+        </div>
+      </div>
+
+      <!-- Drive status / tracking suggestion -->
+      <div id="drive-loading" class="hidden" style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">
+        <span class="spinner" style="display:inline-block;width:13px;height:13px;vertical-align:middle;margin-right:6px;"></span>
+        Checking Drive…
+      </div>
+
+      <div id="tracking-suggestion" class="suggestion-row hidden">
+        <span id="suggestion-text"></span>
+        <button class="use-btn" onclick="useSuggestion()">Use this</button>
+      </div>
+
+      <div class="drive-status hidden" id="drive-info"></div>
+
+      <div class="form-row">
+        <label for="subject" id="subject-label">Location</label>
+        <input type="text" id="subject" placeholder="e.g. Wandsworth">
+      </div>
+
+      <div id="duplicate-warning" class="drive-status warning hidden"></div>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:4px;">
+        <button class="btn btn-primary" id="generate-btn" onclick="generate()">Generate Content</button>
+        <div class="loading-overlay" id="gen-loading">
+          <div class="spinner"></div>
+          Generating… this takes about 15 seconds
+        </div>
+      </div>
+
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <!-- Existing docs (collapsed by default) -->
+    <div class="panel hidden" id="docs-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0;">
+        <div class="panel-title" style="margin-bottom:0;">Existing content in Drive</div>
+        <button class="docs-toggle" onclick="toggleDocs()">Show ▾</button>
+      </div>
+      <div id="docs-list-wrap" class="hidden">
+        <div class="docs-list" id="docs-list"></div>
+      </div>
+    </div>
+
+    <!-- Step 2: Generated content -->
+    <div class="panel hidden" id="result-panel">
+      <div class="panel-title">Generated Content</div>
+
+      <div class="meta-grid">
+        <div class="meta-item">
+          <label>Page title</label>
+          <p id="meta-title">—</p>
+        </div>
+        <div class="meta-item">
+          <label>URL slug</label>
+          <p id="meta-slug">—</p>
+        </div>
+        <div class="meta-item" style="grid-column:1/-1">
+          <label>Navigation note</label>
+          <p class="nav-note" id="meta-nav">—</p>
+        </div>
+      </div>
+
+      <textarea class="content-preview" id="content-editor" spellcheck="true"></textarea>
+      <div class="word-count" id="word-count"></div>
+
+      <div class="action-row">
+        <button class="btn btn-primary" id="save-btn" onclick="saveToDoc()">Save to Drive</button>
+        <button class="btn" style="background:var(--bg-subtle);border:1px solid var(--border);" onclick="regenerate()">Regenerate</button>
+        <div class="loading-overlay" id="save-loading">
+          <div class="spinner"></div>
+          Saving to Drive…
+        </div>
+      </div>
+
+      <div class="saved-banner hidden" id="saved-banner"></div>
+      <div class="error-msg hidden" id="save-error"></div>
+    </div>
+
+  </main>
+
+  <script>
+    let clients = [];
+    let contentType = 'location';
+    let driveFiles = [];
+    let trackingData = null;
+    let suggestionRowIndex = null;
+    let lastGenerated = null;
+
+    async function loadClients() {
+      const res = await fetch('/api/clients');
+      clients = await res.json();
+      const select = document.getElementById('client');
+      select.innerHTML = '<option value="">Select a client…</option>' +
+        clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    }
+
+    function setType(type) {
+      contentType = type;
+      document.getElementById('btn-location').classList.toggle('active', type === 'location');
+      document.getElementById('btn-service').classList.toggle('active', type === 'service');
+      document.getElementById('subject-label').textContent = type === 'location' ? 'Location' : 'Service';
+      document.getElementById('subject').placeholder = type === 'location' ? 'e.g. Wandsworth' : 'e.g. Loft conversions';
+      checkDuplicate();
+    }
+
+    async function onClientChange() {
+      const clientId = document.getElementById('client').value;
+      hide('tracking-suggestion');
+      hide('drive-info');
+      hide('duplicate-warning');
+      hide('docs-panel');
+      hide('result-panel');
+      driveFiles = [];
+      trackingData = null;
+
+      if (!clientId) return;
+
+      show('drive-loading');
+
+      try {
+        const [filesRes, trackingRes] = await Promise.all([
+          fetch(`/api/drive/files/${clientId}`).then(r => r.json()),
+          fetch(`/api/drive/tracking/${clientId}`).then(r => r.json()),
+        ]);
+
+        driveFiles = filesRes.files || [];
+        trackingData = trackingRes;
+
+        // Show existing docs
+        if (driveFiles.length > 0) {
+          const list = driveFiles.map(f =>
+            `<div class="doc-item">
+              <span class="doc-icon">📄</span>
+              <a href="${f.webViewLink}" target="_blank">${escHtml(f.name)}</a>
+            </div>`
+          ).join('');
+          document.getElementById('docs-list').innerHTML = list;
+          show('docs-panel');
+        }
+
+        // Show tracking suggestion
+        if (trackingRes.hasSheet && trackingRes.nextItem) {
+          const item = trackingRes.nextItem;
+          suggestionRowIndex = item.rowIndex;
+          document.getElementById('suggestion-text').textContent =
+            `Tracking sheet suggests next: "${item.item}"`;
+          show('tracking-suggestion');
+        } else if (!trackingRes.hasSheet) {
+          const info = document.getElementById('drive-info');
+          info.className = 'drive-status info visible';
+          info.textContent = 'No tracking sheet configured for this client. Enter the location or service manually.';
+        }
+
+      } catch (e) {
+        const info = document.getElementById('drive-info');
+        info.className = 'drive-status warning visible';
+        info.textContent = 'Could not connect to Drive. You can still generate content.';
+      } finally {
+        hide('drive-loading');
+      }
+    }
+
+    function useSuggestion() {
+      if (!trackingData || !trackingData.nextItem) return;
+      document.getElementById('subject').value = trackingData.nextItem.item;
+      checkDuplicate();
+    }
+
+    function checkDuplicate() {
+      const subject = document.getElementById('subject').value.trim().toLowerCase();
+      const warning = document.getElementById('duplicate-warning');
+      if (!subject || !driveFiles.length) { hide('duplicate-warning'); return; }
+
+      const match = driveFiles.find(f => f.name.toLowerCase().includes(subject));
+      if (match) {
+        warning.innerHTML = `⚠️ Content may already exist for "${escHtml(subject)}" — <a href="${match.webViewLink}" target="_blank">view existing doc</a>`;
+        warning.className = 'drive-status warning visible';
+      } else {
+        hide('duplicate-warning');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('subject').addEventListener('input', checkDuplicate);
+    });
+
+    async function generate() {
+      const clientId = document.getElementById('client').value;
+      const subject = document.getElementById('subject').value.trim();
+      clearError('error-msg');
+
+      if (!clientId || !subject) {
+        showError('error-msg', 'Please select a client and enter a location or service.');
+        return;
+      }
+
+      setGenerating(true);
+      hide('result-panel');
+
+      try {
+        const res = await fetch('/api/generate/content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientId, contentType, subject }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Generation failed');
+        }
+
+        lastGenerated = await res.json();
+        renderResult(lastGenerated);
+      } catch (e) {
+        showError('error-msg', e.message);
+      } finally {
+        setGenerating(false);
+      }
+    }
+
+    function regenerate() {
+      hide('result-panel');
+      generate();
+    }
+
+    function renderResult(data) {
+      document.getElementById('meta-title').textContent = data.pageTitle || '—';
+      document.getElementById('meta-slug').textContent = data.urlSlug ? `/${data.urlSlug}` : '—';
+      document.getElementById('meta-nav').textContent = data.navigationNote || '—';
+      document.getElementById('content-editor').value = data.content || '';
+      updateWordCount();
+      hide('saved-banner');
+      hide('save-error');
+      document.getElementById('save-btn').disabled = false;
+      show('result-panel');
+      document.getElementById('result-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function updateWordCount() {
+      const text = document.getElementById('content-editor').value;
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      document.getElementById('word-count').textContent = `${words} words`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('content-editor').addEventListener('input', updateWordCount);
+    });
+
+    async function saveToDoc() {
+      const clientId = document.getElementById('client').value;
+      const content = document.getElementById('content-editor').value;
+      const title = document.getElementById('meta-title').textContent;
+
+      clearError('save-error');
+      setSaving(true);
+
+      try {
+        const res = await fetch('/api/drive/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clientId,
+            title,
+            content,
+            trackingRowIndex: suggestionRowIndex,
+          }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Save failed');
+        }
+
+        const result = await res.json();
+        const banner = document.getElementById('saved-banner');
+        banner.innerHTML = `✅ Saved to Drive — <a href="${result.docUrl}" target="_blank">Open document</a>${suggestionRowIndex != null ? ' · Tracking sheet updated.' : ''}`;
+        banner.className = 'saved-banner visible';
+        document.getElementById('save-btn').disabled = true;
+
+        // Refresh docs list
+        if (clientId) {
+          const filesRes = await fetch(`/api/drive/files/${clientId}`).then(r => r.json());
+          driveFiles = filesRes.files || [];
+        }
+      } catch (e) {
+        showError('save-error', e.message);
+      } finally {
+        setSaving(false);
+      }
+    }
+
+    function toggleDocs() {
+      const wrap = document.getElementById('docs-list-wrap');
+      const btn = document.querySelector('.docs-toggle');
+      const hidden = wrap.classList.contains('hidden');
+      wrap.classList.toggle('hidden', !hidden);
+      btn.textContent = hidden ? 'Hide ▴' : 'Show ▾';
+    }
+
+    // ── Helpers ──
+    function show(id) { document.getElementById(id).classList.remove('hidden'); }
+    function hide(id) { document.getElementById(id).classList.add('hidden'); }
+    function showError(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.remove('hidden'); el.classList.add('visible'); }
+    function clearError(id) { const el = document.getElementById(id); el.textContent = ''; el.classList.add('hidden'); el.classList.remove('visible'); }
+    function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function setGenerating(on) {
+      document.getElementById('gen-loading').classList.toggle('visible', on);
+      document.getElementById('generate-btn').disabled = on;
+    }
+
+    function setSaving(on) {
+      document.getElementById('save-loading').classList.toggle('visible', on);
+      document.getElementById('save-btn').disabled = on;
+    }
+
+    loadClients();
+  </script>
+</body>
+</html>
