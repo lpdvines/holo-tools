@@ -188,21 +188,6 @@
 
       <div class="page-tabs hidden" id="page-tabs"></div>
 
-      <div class="meta-grid" id="meta-grid">
-        <div class="meta-item">
-          <label>Page title</label>
-          <p id="meta-title">—</p>
-        </div>
-        <div class="meta-item">
-          <label>URL slug</label>
-          <p id="meta-slug">—</p>
-        </div>
-        <div class="meta-item" style="grid-column:1/-1">
-          <label>Navigation note</label>
-          <p class="nav-note" id="meta-nav">—</p>
-        </div>
-      </div>
-
       <textarea class="content-preview" id="content-editor" spellcheck="true"></textarea>
       <div class="word-count" id="word-count"></div>
 
@@ -639,9 +624,6 @@
 
     function renderActivePage() {
       const data = batchPages[activePageIndex];
-      document.getElementById('meta-title').textContent = data.pageTitle || '—';
-      document.getElementById('meta-slug').textContent = data.urlSlug ? `/${data.urlSlug}` : '—';
-      document.getElementById('meta-nav').textContent = data.navigationNote || '—';
       document.getElementById('content-editor').value = data.content || '';
       updateWordCount();
     }

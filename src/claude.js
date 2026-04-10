@@ -50,7 +50,7 @@ Respond with ONLY valid JSON in this exact format, no other text:
 }`;
 
   const response = await client.messages.create({
-    model: 'claude-opus-4-6',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1024,
     messages: [{ role: 'user', content: prompt }],
   });
@@ -119,7 +119,7 @@ Respond with ONLY valid JSON in this exact format, no other text:
 }`;
 
   const response = await client.messages.create({
-    model: 'claude-opus-4-6',
+    model: 'claude-sonnet-4-6',
     max_tokens: 4096,
     messages: [{ role: 'user', content: prompt }],
   });
@@ -163,7 +163,7 @@ Respond with ONLY valid JSON in this exact format, no other text:
 }`;
 
   const response = await client.messages.create({
-    model: 'claude-opus-4-6',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1024,
     messages: [{ role: 'user', content: prompt }],
   });
