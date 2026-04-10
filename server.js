@@ -2,8 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const { generateAdsCopy, generateContent } = require('./src/claude');
+const { generateAdsCopy, generateContent, generateBlogIdeas } = require('./src/claude');
 const { listClientDocs, getTrackingSheetData, saveContentToDoc, markTrackingItemDone, getRecentDocSamples } = require('./src/drive');
+const { getUsageSummary } = require('./src/usage');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,6 +29,16 @@ app.get('/api/clients', (req, res) => {
     res.json(loadClients());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load clients' });
+  }
+});
+
+// ── Usage ─────────────────────────────────────────────────────────────────────
+
+app.get('/api/usage', (req, res) => {
+  try {
+    res.json(getUsageSummary());
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load usage data' });
   }
 });
 
@@ -73,7 +84,10 @@ app.get('/api/drive/tracking/:clientId', async (req, res) => {
       return res.json({ hasSheet: false, rows: [], nextItem: null });
     }
     const data = await getTrackingSheetData(clientData.googleTrackingSheetId);
-    res.json({ hasSheet: true, ...data });
+    const batchSize = clientData.batchSize || 1;
+    // Get next N undone items
+    const nextItems = data.rows.filter(r => !r.done).slice(0, batchSize);
+    res.json({ hasSheet: true, ...data, nextItems, batchSize });
   } catch (err) {
     console.error('Tracking sheet error:', err.message);
     res.status(err.status || 500).json({ error: err.message || 'Failed to read tracking sheet' });
@@ -134,6 +148,101 @@ app.post('/api/drive/save', async (req, res) => {
   } catch (err) {
     console.error('Save to Drive error:', err.message);
     res.status(err.status || 500).json({ error: err.message || 'Failed to save to Drive' });
+  }
+});
+
+// ── Blog Ideas ────────────────────────────────────────────────────────────────
+
+app.post('/api/generate/blog-ideas', async (req, res) => {
+  const { clientId, count } = req.body;
+  if (!clientId) {
+    return res.status(400).json({ error: 'clientId is required' });
+  }
+  try {
+    const clientData = findClient(clientId);
+
+    let existingTitles = [];
+    if (clientData.googleDriveFolderId) {
+      const files = await listClientDocs(clientData.googleDriveFolderId);
+      existingTitles = files.map(f => f.name);
+    }
+
+    const result = await generateBlogIdeas({ clientData, count: count || 8, existingTitles });
+    res.json(result);
+  } catch (err) {
+    console.error('Blog ideas error:', err.message);
+    res.status(err.status || 500).json({ error: err.message || 'Failed to generate blog ideas' });
+  }
+});
+
+// ── Batch Content Generator ───────────────────────────────────────────────────
+
+app.post('/api/generate/content/batch', async (req, res) => {
+  const { clientId, contentType, subjects } = req.body;
+  if (!clientId || !contentType || !subjects || !subjects.length) {
+    return res.status(400).json({ error: 'clientId, contentType and subjects[] are required' });
+  }
+  try {
+    const clientData = findClient(clientId);
+
+    let existingTitles = [];
+    let docSamples = [];
+    if (clientData.googleDriveFolderId) {
+      const [files, samples] = await Promise.all([
+        listClientDocs(clientData.googleDriveFolderId),
+        getRecentDocSamples(clientData.googleDriveFolderId, 2),
+      ]);
+      existingTitles = files.map(f => f.name);
+      docSamples = samples;
+    }
+
+    // Generate each page sequentially to avoid rate limits
+    const pages = [];
+    for (const subject of subjects) {
+      const result = await generateContent({ clientData, contentType, subject, existingTitles, docSamples });
+      pages.push({ subject, ...result });
+    }
+
+    res.json({ pages });
+  } catch (err) {
+    console.error('Batch content generation error:', err.message);
+    res.status(err.status || 500).json({ error: err.message || 'Failed to generate batch content' });
+  }
+});
+
+// ── Drive: save batch content doc ─────────────────────────────────────────────
+
+app.post('/api/drive/save/batch', async (req, res) => {
+  const { clientId, title, pages, trackingRowIndexes } = req.body;
+  if (!clientId || !title || !pages || !pages.length) {
+    return res.status(400).json({ error: 'clientId, title and pages[] are required' });
+  }
+  try {
+    const clientData = findClient(clientId);
+    if (!clientData.googleDriveFolderId) {
+      return res.status(400).json({ error: 'This client has no Drive folder configured' });
+    }
+
+    // Combine all pages into one document with separators
+    const combined = pages.map((p, i) => {
+      const header = `${p.subject.toUpperCase()}\nPage title: ${p.pageTitle}\nURL slug: /${p.urlSlug}\nNavigation: ${p.navigationNote}\n\n`;
+      const separator = i < pages.length - 1 ? '\n\n───────────────────────────────────────\n\n' : '';
+      return header + p.content + separator;
+    }).join('');
+
+    const doc = await saveContentToDoc(clientData.googleDriveFolderId, title, combined);
+
+    // Mark all tracking rows as done
+    if (trackingRowIndexes && trackingRowIndexes.length && clientData.googleTrackingSheetId) {
+      for (const rowIndex of trackingRowIndexes) {
+        await markTrackingItemDone(clientData.googleTrackingSheetId, rowIndex);
+      }
+    }
+
+    res.json({ success: true, ...doc });
+  } catch (err) {
+    console.error('Batch save error:', err.message);
+    res.status(err.status || 500).json({ error: err.message || 'Failed to save batch to Drive' });
   }
 });
 

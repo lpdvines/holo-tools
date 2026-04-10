@@ -9,278 +9,79 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
   <style>
-    .panel {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 28px;
-      margin-bottom: 20px;
-      max-width: 720px;
-    }
-
-    .panel-title {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      color: var(--text);
-    }
-
-    .form-row {
-      margin-bottom: 16px;
-    }
-
-    .form-row label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .form-row select,
-    .form-row input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 14px;
-      color: var(--text);
-      background: #fff;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
-    .form-row select:focus,
-    .form-row input:focus {
-      border-color: var(--accent);
-    }
-
-    .type-toggle {
-      display: flex;
-      gap: 8px;
-    }
-
-    .type-btn {
-      flex: 1;
-      padding: 9px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: #fff;
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: all 0.15s;
-      text-align: center;
-    }
-
-    .type-btn.active {
-      border-color: var(--accent);
-      background: #fff0f4;
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    /* Drive status */
-    .drive-status {
-      display: none;
-      padding: 14px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      margin-bottom: 16px;
-      line-height: 1.6;
-    }
-
+    .panel { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 20px; max-width: 720px; }
+    .panel-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+    .form-row { margin-bottom: 16px; }
+    .form-row label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .form-row select, .form-row input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px; color: var(--text); background: #fff; outline: none; transition: border-color 0.15s; }
+    .form-row select:focus, .form-row input:focus { border-color: var(--accent); }
+    .type-toggle { display: flex; gap: 8px; }
+    .type-btn { flex: 1; padding: 9px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--text-muted); transition: all 0.15s; text-align: center; }
+    .type-btn.active { border-color: var(--accent); background: #fff0f4; color: var(--accent); font-weight: 600; }
+    .drive-status { display: none; padding: 14px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; line-height: 1.6; }
     .drive-status.visible { display: block; }
     .drive-status.info { background: #f0f9ff; border: 1px solid #bae6fd; color: #0369a1; }
     .drive-status.warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
-    .drive-status.success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+    .drive-status a { color: inherit; font-weight: 600; }
 
-    .drive-status a {
-      color: inherit;
-      font-weight: 600;
-    }
+    /* Batch selection */
+    .batch-panel { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .batch-panel .panel-title { margin-bottom: 10px; font-size: 13px; }
+    .batch-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px; }
+    .batch-item input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+    .batch-item label { cursor: pointer; }
+    .batch-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .batch-select-btn { background: none; border: none; color: var(--accent); font-size: 12px; font-family: inherit; cursor: pointer; font-weight: 500; padding: 0; }
+    .blog-idea-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .blog-idea-item:last-child { border-bottom: none; }
+    .blog-idea-item input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; margin-top: 2px; flex-shrink: 0; }
+    .blog-idea-info { flex: 1; }
+    .blog-idea-title { font-size: 14px; font-weight: 600; cursor: pointer; }
+    .blog-idea-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .blog-idea-keyword { font-size: 11px; color: var(--accent); margin-top: 2px; font-weight: 500; }
 
-    .suggestion-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-      padding: 12px 14px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 13px;
-    }
-
+    .suggestion-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 12px 14px; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
     .suggestion-row span { flex: 1; }
-
-    .suggestion-row .use-btn {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 5px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: inherit;
-      white-space: nowrap;
-    }
-
-    /* Existing docs */
-    .docs-list {
-      margin-top: 12px;
-    }
-
-    .doc-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 13px;
-    }
-
+    .suggestion-row .use-btn { background: var(--accent); color: #fff; border: none; padding: 5px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; white-space: nowrap; }
+    .docs-list { margin-top: 12px; }
+    .doc-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
     .doc-item:last-child { border-bottom: none; }
-
-    .doc-item a {
-      color: var(--text);
-      text-decoration: none;
-      flex: 1;
-    }
-
+    .doc-item a { color: var(--text); text-decoration: none; flex: 1; }
     .doc-item a:hover { color: var(--accent); }
-
     .doc-icon { font-size: 15px; flex-shrink: 0; }
 
     /* Content preview */
-    .content-preview {
-      font-size: 14px;
-      line-height: 1.8;
-      white-space: pre-wrap;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      background: var(--bg-subtle);
-      font-family: inherit;
-      width: 100%;
-      min-height: 400px;
-      outline: none;
-      resize: vertical;
-      color: var(--text);
-    }
+    .content-preview { font-size: 14px; line-height: 1.8; white-space: pre-wrap; border: 1px solid var(--border); border-radius: 8px; padding: 16px; background: var(--bg-subtle); font-family: inherit; width: 100%; min-height: 400px; outline: none; resize: vertical; color: var(--text); }
+    .content-preview:focus { border-color: var(--accent); background: #fff; }
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .meta-item label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .meta-item p { font-size: 14px; color: var(--text); }
+    .meta-item .nav-note { font-size: 13px; color: var(--text-muted); }
+    .word-count { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+    .action-row { display: flex; gap: 10px; align-items: center; margin-top: 16px; flex-wrap: wrap; }
 
-    .content-preview:focus {
-      border-color: var(--accent);
-      background: #fff;
-    }
+    /* Page tabs for batch results */
+    .page-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .page-tab { padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit; font-size: 13px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.15s; }
+    .page-tab.active { border-color: var(--accent); background: #fff0f4; color: var(--accent); }
 
-    .meta-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
+    /* Progress bar */
+    .progress-bar { margin-top: 12px; }
+    .progress-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.3s; }
+    .progress-text { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
 
-    .meta-item label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 4px;
-    }
-
-    .meta-item p {
-      font-size: 14px;
-      color: var(--text);
-    }
-
-    .meta-item .nav-note {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .word-count {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 6px;
-    }
-
-    /* Actions */
-    .action-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-top: 16px;
-      flex-wrap: wrap;
-    }
-
-    /* Loading */
-    .loading-overlay {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
+    .loading-overlay { display: none; align-items: center; gap: 10px; color: var(--text-muted); font-size: 14px; }
     .loading-overlay.visible { display: flex; }
-
-    .spinner {
-      width: 18px;
-      height: 18px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      flex-shrink: 0;
-    }
-
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    .error-msg {
-      display: none;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #dc2626;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-top: 12px;
-    }
-
+    .error-msg { display: none; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-top: 12px; }
     .error-msg.visible { display: block; }
-
     .hidden { display: none !important; }
-
-    /* Saved confirmation */
-    .saved-banner {
-      display: none;
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      color: #15803d;
-      padding: 14px 18px;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
+    .saved-banner { display: none; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; padding: 14px 18px; border-radius: 8px; font-size: 14px; margin-top: 12px; }
     .saved-banner.visible { display: block; }
     .saved-banner a { color: #15803d; font-weight: 600; }
-
-    .docs-toggle {
-      background: none;
-      border: none;
-      color: var(--accent);
-      font-size: 13px;
-      font-family: inherit;
-      cursor: pointer;
-      padding: 0;
-      font-weight: 500;
-    }
+    .docs-toggle { background: none; border: none; color: var(--accent); font-size: 13px; font-family: inherit; cursor: pointer; padding: 0; font-weight: 500; }
   </style>
 </head>
 <body>
@@ -294,7 +95,7 @@
     <h1 class="page-title">Content Generator</h1>
     <p class="page-subtitle">Generate SEO location and service pages for clients.</p>
 
-    <!-- Step 1: Client + type -->
+    <!-- Setup panel -->
     <div class="panel" id="setup-panel">
       <div class="form-row">
         <label for="client">Client</label>
@@ -306,25 +107,48 @@
       <div class="form-row">
         <label>Content type</label>
         <div class="type-toggle">
-          <button class="type-btn active" id="btn-location" onclick="setType('location')">📍 Location page</button>
-          <button class="type-btn" id="btn-service" onclick="setType('service')">🔧 Service page</button>
+          <button class="type-btn active" id="btn-location" onclick="setType('location')">Location page</button>
+          <button class="type-btn" id="btn-service" onclick="setType('service')">Service page</button>
+          <button class="type-btn" id="btn-blog" onclick="setType('blog')">Blog post</button>
         </div>
       </div>
 
-      <!-- Drive status / tracking suggestion -->
       <div id="drive-loading" class="hidden" style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">
         <span class="spinner" style="display:inline-block;width:13px;height:13px;vertical-align:middle;margin-right:6px;"></span>
         Checking Drive…
       </div>
 
-      <div id="tracking-suggestion" class="suggestion-row hidden">
-        <span id="suggestion-text"></span>
-        <button class="use-btn" onclick="useSuggestion()">Use this</button>
-      </div>
-
       <div class="drive-status hidden" id="drive-info"></div>
 
-      <div class="form-row">
+      <!-- Batch mode: checkboxes for next locations -->
+      <div id="batch-panel" class="batch-panel hidden">
+        <div class="panel-title">Next locations from tracking sheet</div>
+        <div id="batch-items"></div>
+        <div class="batch-actions">
+          <button class="batch-select-btn" onclick="toggleAllBatch(true)">Select all</button>
+          <button class="batch-select-btn" onclick="toggleAllBatch(false)">Deselect all</button>
+        </div>
+      </div>
+
+      <!-- Blog ideas panel -->
+      <div id="blog-ideas-panel" class="batch-panel hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div class="panel-title" style="margin-bottom:0;">Blog post ideas</div>
+          <button class="batch-select-btn" onclick="fetchBlogIdeas()" id="refresh-ideas-btn">Refresh ideas</button>
+        </div>
+        <div id="blog-ideas-loading" class="hidden" style="font-size:13px;color:var(--text-muted);padding:8px 0;">
+          <span class="spinner" style="display:inline-block;width:13px;height:13px;vertical-align:middle;margin-right:6px;"></span>
+          Generating blog ideas…
+        </div>
+        <div id="blog-ideas-items"></div>
+        <div class="batch-actions" id="blog-ideas-actions" class="hidden">
+          <button class="batch-select-btn" onclick="toggleAllBlogIdeas(true)">Select all</button>
+          <button class="batch-select-btn" onclick="toggleAllBlogIdeas(false)">Deselect all</button>
+        </div>
+      </div>
+
+      <!-- Single mode: manual input -->
+      <div class="form-row" id="single-input-row">
         <label for="subject" id="subject-label">Location</label>
         <input type="text" id="subject" placeholder="e.g. Wandsworth">
       </div>
@@ -335,29 +159,36 @@
         <button class="btn btn-primary" id="generate-btn" onclick="generate()">Generate Content</button>
         <div class="loading-overlay" id="gen-loading">
           <div class="spinner"></div>
-          Generating… this takes about 15 seconds
+          <span id="gen-loading-text">Generating…</span>
         </div>
+      </div>
+
+      <div class="progress-bar hidden" id="progress-bar">
+        <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        <div class="progress-text" id="progress-text"></div>
       </div>
 
       <div class="error-msg" id="error-msg"></div>
     </div>
 
-    <!-- Existing docs (collapsed by default) -->
+    <!-- Existing docs -->
     <div class="panel hidden" id="docs-panel">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0;">
         <div class="panel-title" style="margin-bottom:0;">Existing content in Drive</div>
-        <button class="docs-toggle" onclick="toggleDocs()">Show ▾</button>
+        <button class="docs-toggle" onclick="toggleDocs()">Show</button>
       </div>
       <div id="docs-list-wrap" class="hidden">
         <div class="docs-list" id="docs-list"></div>
       </div>
     </div>
 
-    <!-- Step 2: Generated content -->
+    <!-- Results — batch mode shows tabs per page -->
     <div class="panel hidden" id="result-panel">
-      <div class="panel-title">Generated Content</div>
+      <div class="panel-title" id="result-title">Generated Content</div>
 
-      <div class="meta-grid">
+      <div class="page-tabs hidden" id="page-tabs"></div>
+
+      <div class="meta-grid" id="meta-grid">
         <div class="meta-item">
           <label>Page title</label>
           <p id="meta-title">—</p>
@@ -395,8 +226,13 @@
     let contentType = 'location';
     let driveFiles = [];
     let trackingData = null;
-    let suggestionRowIndex = null;
-    let lastGenerated = null;
+    let batchMode = false;
+    let batchNextItems = [];
+    let batchPages = [];
+    let batchTrackingIndexes = [];
+    let activePageIndex = 0;
+    let currentClientData = null;
+    let blogIdeas = [];
 
     async function loadClients() {
       const res = await fetch('/api/clients');
@@ -410,30 +246,69 @@
       contentType = type;
       document.getElementById('btn-location').classList.toggle('active', type === 'location');
       document.getElementById('btn-service').classList.toggle('active', type === 'service');
-      document.getElementById('subject-label').textContent = type === 'location' ? 'Location' : 'Service';
-      document.getElementById('subject').placeholder = type === 'location' ? 'e.g. Wandsworth' : 'e.g. Loft conversions';
+      document.getElementById('btn-blog').classList.toggle('active', type === 'blog');
+
+      if (type === 'blog') {
+        document.getElementById('subject-label').textContent = 'Blog topic';
+        document.getElementById('subject').placeholder = 'e.g. How to choose the right excavator for your project';
+      } else {
+        document.getElementById('subject-label').textContent = type === 'location' ? 'Location' : 'Service';
+        document.getElementById('subject').placeholder = type === 'location' ? 'e.g. Wandsworth' : 'e.g. Loft conversions';
+      }
+
+      // Show/hide blog ideas vs batch panel
+      if (type === 'blog' && currentClientData) {
+        hide('batch-panel');
+        hide('single-input-row');
+        fetchBlogIdeas();
+      } else if (type !== 'blog') {
+        hide('blog-ideas-panel');
+        // Re-trigger client change to show correct panels
+        if (currentClientData) onClientChange();
+      }
       checkDuplicate();
     }
 
     async function onClientChange() {
       const clientId = document.getElementById('client').value;
-      hide('tracking-suggestion');
       hide('drive-info');
       hide('duplicate-warning');
       hide('docs-panel');
       hide('result-panel');
+      hide('batch-panel');
+      hide('progress-bar');
       driveFiles = [];
       trackingData = null;
+      batchMode = false;
+      batchNextItems = [];
+      batchPages = [];
+      currentClientData = null;
+
+      document.getElementById('single-input-row').classList.remove('hidden');
 
       if (!clientId) return;
 
-      // Apply client defaults
-      const clientData = clients.find(c => c.id === clientId);
-      if (clientData) {
-        if (clientData.defaultContentType) setType(clientData.defaultContentType);
-        if (clientData.defaultService) {
-          document.getElementById('subject-label').textContent = clientData.defaultService;
-        }
+      currentClientData = clients.find(c => c.id === clientId);
+
+      // If blog type, skip tracking/batch flow and go straight to ideas
+      if (currentClientData && currentClientData.defaultContentType === 'blog') {
+        setType('blog');
+        // Still load drive files in background
+        fetch(`/api/drive/files/${clientId}`).then(r => r.json()).then(filesRes => {
+          driveFiles = filesRes.files || [];
+          if (driveFiles.length > 0) {
+            const list = driveFiles.map(f =>
+              `<div class="doc-item"><span class="doc-icon">📄</span><a href="${f.webViewLink}" target="_blank">${escHtml(f.name)}</a></div>`
+            ).join('');
+            document.getElementById('docs-list').innerHTML = list;
+            show('docs-panel');
+          }
+        });
+        return;
+      }
+
+      if (currentClientData && currentClientData.defaultContentType) {
+        setType(currentClientData.defaultContentType);
       }
 
       show('drive-loading');
@@ -447,7 +322,6 @@
         driveFiles = filesRes.files || [];
         trackingData = trackingRes;
 
-        // Show existing docs
         if (driveFiles.length > 0) {
           const list = driveFiles.map(f =>
             `<div class="doc-item">
@@ -459,17 +333,33 @@
           show('docs-panel');
         }
 
-        // Show tracking suggestion
-        if (trackingRes.hasSheet && trackingRes.nextItem) {
-          const item = trackingRes.nextItem;
-          suggestionRowIndex = item.rowIndex;
-          document.getElementById('suggestion-text').textContent =
-            `Tracking sheet suggests next: "${item.item}"`;
-          show('tracking-suggestion');
+        // Batch mode: if tracking sheet has nextItems and client has batchSize
+        if (trackingRes.hasSheet && trackingRes.nextItems && trackingRes.nextItems.length > 0) {
+          batchNextItems = trackingRes.nextItems;
+          batchMode = true;
+
+          const itemsHtml = batchNextItems.map((item, i) =>
+            `<div class="batch-item">
+              <input type="checkbox" id="batch-${i}" checked>
+              <label for="batch-${i}">${escHtml(item.item)}</label>
+            </div>`
+          ).join('');
+          document.getElementById('batch-items').innerHTML = itemsHtml;
+          show('batch-panel');
+          hide('single-input-row');
+
+          const svc = currentClientData.defaultService ? ` (${currentClientData.defaultService})` : '';
+          document.getElementById('generate-btn').textContent = `Generate ${batchNextItems.length} Pages`;
+        } else if (trackingRes.hasSheet && trackingRes.nextItem) {
+          // Single suggestion fallback
+          document.getElementById('subject').value = trackingRes.nextItem.item;
+          batchMode = false;
+          document.getElementById('generate-btn').textContent = 'Generate Content';
         } else if (!trackingRes.hasSheet) {
           const info = document.getElementById('drive-info');
           info.className = 'drive-status info visible';
           info.textContent = 'No tracking sheet configured for this client. Enter the location or service manually.';
+          document.getElementById('generate-btn').textContent = 'Generate Content';
         }
 
       } catch (e) {
@@ -481,20 +371,90 @@
       }
     }
 
-    function useSuggestion() {
-      if (!trackingData || !trackingData.nextItem) return;
-      document.getElementById('subject').value = trackingData.nextItem.item;
-      checkDuplicate();
+    function toggleAllBatch(checked) {
+      document.querySelectorAll('#batch-items input[type="checkbox"]').forEach(cb => cb.checked = checked);
+      const count = checked ? batchNextItems.length : 0;
+      document.getElementById('generate-btn').textContent = count > 1 ? `Generate ${count} Pages` : 'Generate Content';
+    }
+
+    function getSelectedBatchItems() {
+      const items = [];
+      batchNextItems.forEach((item, i) => {
+        const cb = document.getElementById(`batch-${i}`);
+        if (cb && cb.checked) items.push(item);
+      });
+      return items;
+    }
+
+    async function fetchBlogIdeas() {
+      if (!currentClientData) return;
+      show('blog-ideas-panel');
+      show('blog-ideas-loading');
+      document.getElementById('blog-ideas-items').innerHTML = '';
+      document.getElementById('refresh-ideas-btn').disabled = true;
+
+      try {
+        const batchSize = currentClientData.batchSize || 4;
+        const res = await fetch('/api/generate/blog-ideas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientId: currentClientData.id, count: batchSize * 2 }),
+        });
+
+        if (!res.ok) { const err = await res.json(); throw new Error(err.error); }
+
+        const data = await res.json();
+        blogIdeas = data.ideas || [];
+
+        const html = blogIdeas.map((idea, i) =>
+          `<div class="blog-idea-item">
+            <input type="checkbox" id="blog-idea-${i}" ${i < batchSize ? 'checked' : ''}>
+            <label class="blog-idea-info" for="blog-idea-${i}">
+              <div class="blog-idea-title">${escHtml(idea.title)}</div>
+              <div class="blog-idea-desc">${escHtml(idea.description)}</div>
+              <div class="blog-idea-keyword">Keyword: ${escHtml(idea.targetKeyword)}</div>
+            </label>
+          </div>`
+        ).join('');
+        document.getElementById('blog-ideas-items').innerHTML = html;
+
+        updateBlogGenerateButton();
+      } catch (e) {
+        document.getElementById('blog-ideas-items').innerHTML = `<p style="color:#dc2626;font-size:13px;">Failed to generate ideas: ${escHtml(e.message)}</p>`;
+      } finally {
+        hide('blog-ideas-loading');
+        document.getElementById('refresh-ideas-btn').disabled = false;
+      }
+    }
+
+    function getSelectedBlogIdeas() {
+      const selected = [];
+      blogIdeas.forEach((idea, i) => {
+        const cb = document.getElementById(`blog-idea-${i}`);
+        if (cb && cb.checked) selected.push(idea);
+      });
+      return selected;
+    }
+
+    function toggleAllBlogIdeas(checked) {
+      document.querySelectorAll('#blog-ideas-items input[type="checkbox"]').forEach(cb => cb.checked = checked);
+      updateBlogGenerateButton();
+    }
+
+    function updateBlogGenerateButton() {
+      const count = getSelectedBlogIdeas().length;
+      document.getElementById('generate-btn').textContent = count > 1 ? `Generate ${count} Blog Posts` : count === 1 ? 'Generate Blog Post' : 'Generate Content';
     }
 
     function checkDuplicate() {
+      if (batchMode) return;
       const subject = document.getElementById('subject').value.trim().toLowerCase();
       const warning = document.getElementById('duplicate-warning');
       if (!subject || !driveFiles.length) { hide('duplicate-warning'); return; }
 
       const match = driveFiles.find(f => f.name.toLowerCase().includes(subject));
       if (match) {
-        warning.innerHTML = `⚠️ Content may already exist for "${escHtml(subject)}" — <a href="${match.webViewLink}" target="_blank">view existing doc</a>`;
+        warning.innerHTML = `Warning: content may already exist for "${escHtml(subject)}" — <a href="${match.webViewLink}" target="_blank">view existing doc</a>`;
         warning.className = 'drive-status warning visible';
       } else {
         hide('duplicate-warning');
@@ -503,19 +463,35 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('subject').addEventListener('input', checkDuplicate);
+      document.getElementById('content-editor').addEventListener('input', updateWordCount);
     });
 
     async function generate() {
       const clientId = document.getElementById('client').value;
-      const subject = document.getElementById('subject').value.trim();
       clearError('error-msg');
 
+      if (contentType === 'blog') {
+        const selected = getSelectedBlogIdeas();
+        if (!selected.length) {
+          showError('error-msg', 'Please select at least one blog post idea.');
+          return;
+        }
+        await generateBatchFromSubjects(clientId, selected.map(s => s.title));
+      } else if (batchMode) {
+        await generateBatch(clientId);
+      } else {
+        await generateSingle(clientId);
+      }
+    }
+
+    async function generateSingle(clientId) {
+      const subject = document.getElementById('subject').value.trim();
       if (!clientId || !subject) {
         showError('error-msg', 'Please select a client and enter a location or service.');
         return;
       }
 
-      setGenerating(true);
+      setGenerating(true, 'Generating… this takes about 15 seconds');
       hide('result-panel');
 
       try {
@@ -525,13 +501,97 @@
           body: JSON.stringify({ clientId, contentType, subject }),
         });
 
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || 'Generation failed');
+        if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Generation failed'); }
+
+        batchPages = [await res.json()];
+        batchTrackingIndexes = trackingData && trackingData.nextItem ? [trackingData.nextItem.rowIndex] : [];
+        activePageIndex = 0;
+        renderResults();
+      } catch (e) {
+        showError('error-msg', e.message);
+      } finally {
+        setGenerating(false);
+      }
+    }
+
+    async function generateBatch(clientId) {
+      const selected = getSelectedBatchItems();
+      if (!selected.length) {
+        showError('error-msg', 'Please select at least one location.');
+        return;
+      }
+
+      const subjects = selected.map(s => s.item);
+      batchTrackingIndexes = selected.map(s => s.rowIndex);
+
+      setGenerating(true, `Generating page 1 of ${subjects.length}…`);
+      show('progress-bar');
+      hide('result-panel');
+      batchPages = [];
+
+      try {
+        // Generate one at a time so we can show progress
+        for (let i = 0; i < subjects.length; i++) {
+          document.getElementById('gen-loading-text').textContent = `Generating page ${i + 1} of ${subjects.length} (${subjects[i]})…`;
+          document.getElementById('progress-fill').style.width = `${((i) / subjects.length) * 100}%`;
+          document.getElementById('progress-text').textContent = `${i} of ${subjects.length} complete`;
+
+          const res = await fetch('/api/generate/content', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clientId, contentType, subject: subjects[i] }),
+          });
+
+          if (!res.ok) { const err = await res.json(); throw new Error(err.error || `Failed to generate page for ${subjects[i]}`); }
+
+          const page = await res.json();
+          page.subject = subjects[i];
+          batchPages.push(page);
         }
 
-        lastGenerated = await res.json();
-        renderResult(lastGenerated);
+        document.getElementById('progress-fill').style.width = '100%';
+        document.getElementById('progress-text').textContent = `${subjects.length} of ${subjects.length} complete`;
+
+        activePageIndex = 0;
+        renderResults();
+      } catch (e) {
+        showError('error-msg', e.message);
+      } finally {
+        setGenerating(false);
+      }
+    }
+
+    async function generateBatchFromSubjects(clientId, subjects) {
+      batchTrackingIndexes = [];
+      setGenerating(true, `Generating post 1 of ${subjects.length}…`);
+      show('progress-bar');
+      hide('result-panel');
+      batchPages = [];
+
+      try {
+        for (let i = 0; i < subjects.length; i++) {
+          document.getElementById('gen-loading-text').textContent = `Generating post ${i + 1} of ${subjects.length}…`;
+          document.getElementById('progress-fill').style.width = `${((i) / subjects.length) * 100}%`;
+          document.getElementById('progress-text').textContent = `${i} of ${subjects.length} complete`;
+
+          const res = await fetch('/api/generate/content', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clientId, contentType: 'blog', subject: subjects[i] }),
+          });
+
+          if (!res.ok) { const err = await res.json(); throw new Error(err.error || `Failed to generate: ${subjects[i]}`); }
+
+          const page = await res.json();
+          page.subject = subjects[i];
+          batchPages.push(page);
+        }
+
+        document.getElementById('progress-fill').style.width = '100%';
+        document.getElementById('progress-text').textContent = `${subjects.length} of ${subjects.length} complete`;
+
+        activePageIndex = 0;
+        renderResults();
       } catch (e) {
         showError('error-msg', e.message);
       } finally {
@@ -544,17 +604,46 @@
       generate();
     }
 
-    function renderResult(data) {
+    function renderResults() {
+      const isBatch = batchPages.length > 1;
+
+      // Show/hide tabs
+      if (isBatch) {
+        const tabsHtml = batchPages.map((p, i) =>
+          `<button class="page-tab ${i === activePageIndex ? 'active' : ''}" onclick="switchPage(${i})">${escHtml(p.subject || p.pageTitle)}</button>`
+        ).join('');
+        document.getElementById('page-tabs').innerHTML = tabsHtml;
+        document.getElementById('page-tabs').classList.remove('hidden');
+        document.getElementById('result-title').textContent = `Generated Content — ${batchPages.length} pages`;
+      } else {
+        document.getElementById('page-tabs').classList.add('hidden');
+        document.getElementById('result-title').textContent = 'Generated Content';
+      }
+
+      renderActivePage();
+      hide('saved-banner');
+      hide('save-error');
+      document.getElementById('save-btn').disabled = false;
+      document.getElementById('save-btn').textContent = isBatch ? 'Save All to Drive' : 'Save to Drive';
+      show('result-panel');
+      document.getElementById('result-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function switchPage(index) {
+      // Save current edits before switching
+      batchPages[activePageIndex].content = document.getElementById('content-editor').value;
+      activePageIndex = index;
+      renderActivePage();
+      document.querySelectorAll('.page-tab').forEach((t, i) => t.classList.toggle('active', i === index));
+    }
+
+    function renderActivePage() {
+      const data = batchPages[activePageIndex];
       document.getElementById('meta-title').textContent = data.pageTitle || '—';
       document.getElementById('meta-slug').textContent = data.urlSlug ? `/${data.urlSlug}` : '—';
       document.getElementById('meta-nav').textContent = data.navigationNote || '—';
       document.getElementById('content-editor').value = data.content || '';
       updateWordCount();
-      hide('saved-banner');
-      hide('save-error');
-      document.getElementById('save-btn').disabled = false;
-      show('result-panel');
-      document.getElementById('result-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function updateWordCount() {
@@ -563,42 +652,71 @@
       document.getElementById('word-count').textContent = `${words} words`;
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('content-editor').addEventListener('input', updateWordCount);
-    });
+    function getDocTitle() {
+      if (!currentClientData) return 'Content';
+      if (currentClientData.docNameFormat) {
+        const now = new Date();
+        const monthYear = now.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+        return currentClientData.docNameFormat
+          .replace('{name}', currentClientData.name)
+          .replace('{monthYear}', monthYear);
+      }
+      return batchPages.length === 1 ? batchPages[0].pageTitle : `${currentClientData.name} - Content`;
+    }
 
     async function saveToDoc() {
       const clientId = document.getElementById('client').value;
-      const content = document.getElementById('content-editor').value;
-      const title = document.getElementById('meta-title').textContent;
+      // Save any current edits
+      batchPages[activePageIndex].content = document.getElementById('content-editor').value;
 
       clearError('save-error');
       setSaving(true);
 
-      try {
-        const res = await fetch('/api/drive/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            clientId,
-            title,
-            content,
-            trackingRowIndex: suggestionRowIndex,
-          }),
-        });
+      const title = getDocTitle();
 
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.error || 'Save failed');
+      try {
+        if (batchPages.length > 1) {
+          // Batch save
+          const res = await fetch('/api/drive/save/batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              clientId,
+              title,
+              pages: batchPages,
+              trackingRowIndexes: batchTrackingIndexes,
+            }),
+          });
+
+          if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Save failed'); }
+
+          const result = await res.json();
+          const banner = document.getElementById('saved-banner');
+          banner.innerHTML = `Saved ${batchPages.length} pages to Drive as "${escHtml(title)}" — <a href="${result.docUrl}" target="_blank">Open document</a> · Tracking sheet updated.`;
+          banner.className = 'saved-banner visible';
+        } else {
+          // Single save
+          const res = await fetch('/api/drive/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              clientId,
+              title,
+              content: batchPages[0].content,
+              trackingRowIndex: batchTrackingIndexes[0] || null,
+            }),
+          });
+
+          if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Save failed'); }
+
+          const result = await res.json();
+          const banner = document.getElementById('saved-banner');
+          banner.innerHTML = `Saved to Drive as "${escHtml(title)}" — <a href="${result.docUrl}" target="_blank">Open document</a>${batchTrackingIndexes.length ? ' · Tracking sheet updated.' : ''}`;
+          banner.className = 'saved-banner visible';
         }
 
-        const result = await res.json();
-        const banner = document.getElementById('saved-banner');
-        banner.innerHTML = `✅ Saved to Drive — <a href="${result.docUrl}" target="_blank">Open document</a>${suggestionRowIndex != null ? ' · Tracking sheet updated.' : ''}`;
-        banner.className = 'saved-banner visible';
         document.getElementById('save-btn').disabled = true;
 
-        // Refresh docs list
         if (clientId) {
           const filesRes = await fetch(`/api/drive/files/${clientId}`).then(r => r.json());
           driveFiles = filesRes.files || [];
@@ -615,18 +733,18 @@
       const btn = document.querySelector('.docs-toggle');
       const hidden = wrap.classList.contains('hidden');
       wrap.classList.toggle('hidden', !hidden);
-      btn.textContent = hidden ? 'Hide ▴' : 'Show ▾';
+      btn.textContent = hidden ? 'Hide' : 'Show';
     }
 
-    // ── Helpers ──
     function show(id) { document.getElementById(id).classList.remove('hidden'); }
     function hide(id) { document.getElementById(id).classList.add('hidden'); }
     function showError(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.remove('hidden'); el.classList.add('visible'); }
     function clearError(id) { const el = document.getElementById(id); el.textContent = ''; el.classList.add('hidden'); el.classList.remove('visible'); }
     function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-    function setGenerating(on) {
+    function setGenerating(on, text) {
       document.getElementById('gen-loading').classList.toggle('visible', on);
+      if (text) document.getElementById('gen-loading-text').textContent = text;
       document.getElementById('generate-btn').disabled = on;
     }
 
@@ -634,6 +752,17 @@
       document.getElementById('save-loading').classList.toggle('visible', on);
       document.getElementById('save-btn').disabled = on;
     }
+
+    // Listen for checkbox changes to update button text
+    document.addEventListener('change', (e) => {
+      if (e.target.closest('#batch-items')) {
+        const count = getSelectedBatchItems().length;
+        document.getElementById('generate-btn').textContent = count > 1 ? `Generate ${count} Pages` : 'Generate Content';
+      }
+      if (e.target.closest('#blog-ideas-items')) {
+        updateBlogGenerateButton();
+      }
+    });
 
     loadClients();
   </script>

@@ -1,6 +1,24 @@
 const Anthropic = require('@anthropic-ai/sdk');
+const { trackUsage } = require('./usage');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+function parseJSON(raw) {
+  const text = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+  return JSON.parse(text);
+}
+
+function track(response, tool, clientData) {
+  const usage = response.usage || {};
+  trackUsage({
+    model: response.model || 'claude-opus-4-6',
+    inputTokens: usage.input_tokens || 0,
+    outputTokens: usage.output_tokens || 0,
+    tool,
+    clientId: clientData ? clientData.id : null,
+    clientName: clientData ? clientData.name : null,
+  });
+}
 
 async function generateAdsCopy({ clientData, service, location, notes }) {
   const prompt = `You are an expert Google Ads copywriter for a UK marketing agency.
@@ -37,13 +55,11 @@ Respond with ONLY valid JSON in this exact format, no other text:
     messages: [{ role: 'user', content: prompt }],
   });
 
-  const raw = response.content[0].text.trim();
-  const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
-  const json = JSON.parse(text);
+  track(response, 'ads', clientData);
 
+  const json = parseJSON(response.content[0].text);
   json.headlines = json.headlines.slice(0, 15).map(h => h.slice(0, 30));
   json.descriptions = json.descriptions.slice(0, 4).map(d => d.slice(0, 90));
-
   return json;
 }
 
@@ -56,26 +72,40 @@ async function generateContent({ clientData, contentType, subject, existingTitle
     ? `\nHere are samples of existing content written for this client. Match their format, structure and writing style closely:\n\n${docSamples.map(s => `--- ${s.name} ---\n${s.text}`).join('\n\n')}`
     : '';
 
+  const internalLinksSection = clientData.internalLinks && clientData.internalLinks.length
+    ? `\nInternal links to include naturally in the content. Include at least one, only add multiple if genuinely relevant to the topic:\n${clientData.internalLinks.map(l => `- ${l.label}: ${l.url}`).join('\n')}\nFormat links as HTML anchor tags, e.g. <a href="URL">anchor text</a>.`
+    : '';
+
+  let typeInstruction;
+  if (contentType === 'blog') {
+    typeInstruction = `Blog post topic: ${subject}`;
+  } else if (contentType === 'location') {
+    typeInstruction = `Target location: ${subject}`;
+  } else {
+    typeInstruction = `Target service: ${subject}`;
+  }
+
   const prompt = `You are an expert SEO content writer for a UK marketing agency. Write in British English throughout.
 
-Generate a full SEO ${contentType === 'location' ? 'location page' : 'service page'} for the following:
+Generate a full SEO ${contentType === 'blog' ? 'blog post' : contentType === 'location' ? 'location page' : 'service page'} for the following:
 
 Client: ${clientData.name}
 Industry: ${clientData.industry}
 Tone of voice: ${clientData.toneOfVoice}
 Key messages: ${clientData.keyMessages.join(', ')}
 ${clientData.avoidPhrases.length ? `Phrases to avoid: ${clientData.avoidPhrases.join(', ')}` : ''}
-${contentType === 'location' ? `Target location: ${subject}` : `Target service: ${subject}`}
+${typeInstruction}
 ${clientData.defaultService ? `Core service focus: ${clientData.defaultService} (weave this service naturally throughout the page alongside the location)` : ''}
+${internalLinksSection}
 ${existingList}
 ${samplesSection}
 
 Requirements:
 - 600-800 words
 - Must include one H1 and several H2 headings
-- Naturally weave in the ${contentType === 'location' ? 'location' : 'service'} throughout
+- Naturally weave in the ${contentType === 'blog' ? 'topic' : contentType === 'location' ? 'location' : 'service'} throughout
 - Written in the client's tone of voice
-- Match the format and structure of the existing samples above
+${docSamples && docSamples.length ? '- Match the format and structure of the existing samples above' : ''}
 - Unique — do not repeat phrases or structure from any existing content listed above
 - British English throughout
 - Strong call to action at the end
@@ -85,7 +115,7 @@ Respond with ONLY valid JSON in this exact format, no other text:
   "pageTitle": "SEO page title (60 chars max)",
   "urlSlug": "url-slug-suggestion",
   "navigationNote": "Brief note on where this page should sit in the site navigation",
-  "content": "Full page content here. Use # for H1 and ## for H2 headings. Plain text otherwise."
+  "content": "Full page content here. Use # for H1 and ## for H2 headings. Plain text otherwise. Include HTML anchor tags for internal links."
 }`;
 
   const response = await client.messages.create({
@@ -94,9 +124,53 @@ Respond with ONLY valid JSON in this exact format, no other text:
     messages: [{ role: 'user', content: prompt }],
   });
 
-  const raw = response.content[0].text.trim();
-  const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
-  return JSON.parse(text);
+  track(response, 'content', clientData);
+
+  return parseJSON(response.content[0].text);
 }
 
-module.exports = { generateAdsCopy, generateContent };
+async function generateBlogIdeas({ clientData, count, existingTitles }) {
+  const existingList = existingTitles.length
+    ? `\nExisting blog posts and content already written (do not suggest similar topics):\n${existingTitles.map(t => `- ${t}`).join('\n')}`
+    : '';
+
+  const internalLinksContext = clientData.internalLinks && clientData.internalLinks.length
+    ? `\nThe client's website has these service pages that blog posts should naturally link to:\n${clientData.internalLinks.map(l => `- ${l.label}: ${l.url}`).join('\n')}`
+    : '';
+
+  const prompt = `You are a content strategist for a UK marketing agency. Think about what blog topics would work well for SEO and would be genuinely useful to potential customers searching for services in this industry.
+
+Client: ${clientData.name}
+Industry: ${clientData.industry}
+Services: ${clientData.services.join(', ')}
+Key messages: ${clientData.keyMessages.join(', ')}
+Tone of voice: ${clientData.toneOfVoice}
+${internalLinksContext}
+${existingList}
+
+Generate ${count} blog post ideas. Each should:
+- Be relevant to the client's industry and services
+- Target a keyword or question potential customers would search for
+- Be unique and not duplicate any existing content listed above
+- Be suitable for a 600-800 word article
+
+Respond with ONLY valid JSON in this exact format, no other text:
+{
+  "ideas": [
+    { "title": "Blog post title", "description": "One-line description of what the post covers", "targetKeyword": "primary keyword to target" },
+    ...
+  ]
+}`;
+
+  const response = await client.messages.create({
+    model: 'claude-opus-4-6',
+    max_tokens: 1024,
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  track(response, 'blog-ideas', clientData);
+
+  return parseJSON(response.content[0].text);
+}
+
+module.exports = { generateAdsCopy, generateContent, generateBlogIdeas };

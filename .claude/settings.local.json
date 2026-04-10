@@ -7,7 +7,12 @@
       "Bash(curl -s http://localhost:3000/api/clients)",
       "Bash(curl -s http://localhost:3000/tools/ads.html)",
       "Bash(curl -s http://localhost:3000/api/drive/files/kremer-signs)",
-      "Bash(node -e ':*)"
+      "Bash(node -e ':*)",
+      "Bash(curl -s http://localhost:3000/api/drive/tracking/kremer-signs)",
+      "Bash(node -e \"const d=[];process.stdin.on\\('data',c=>d.push\\(c\\)\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(Buffer.concat\\(d\\)\\);console.log\\('hasSheet:',j.hasSheet\\);console.log\\('batchSize:',j.batchSize\\);console.log\\('nextItems:',JSON.stringify\\(j.nextItems?.slice\\(0,4\\)\\)\\)}\\)\")",
+      "Bash(curl -s http://localhost:3000/tools/content.html)",
+      "WebSearch",
+      "Bash(curl -s http://localhost:3000/api/usage)"
     ]
   }
 }
