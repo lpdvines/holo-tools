@@ -66,6 +66,7 @@ Tone of voice: ${clientData.toneOfVoice}
 Key messages: ${clientData.keyMessages.join(', ')}
 ${clientData.avoidPhrases.length ? `Phrases to avoid: ${clientData.avoidPhrases.join(', ')}` : ''}
 ${contentType === 'location' ? `Target location: ${subject}` : `Target service: ${subject}`}
+${clientData.defaultService ? `Core service focus: ${clientData.defaultService} (weave this service naturally throughout the page alongside the location)` : ''}
 ${existingList}
 ${samplesSection}
 

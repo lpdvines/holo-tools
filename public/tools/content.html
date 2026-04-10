@@ -427,6 +427,15 @@
 
       if (!clientId) return;
 
+      // Apply client defaults
+      const clientData = clients.find(c => c.id === clientId);
+      if (clientData) {
+        if (clientData.defaultContentType) setType(clientData.defaultContentType);
+        if (clientData.defaultService) {
+          document.getElementById('subject-label').textContent = clientData.defaultService;
+        }
+      }
+
       show('drive-loading');
 
       try {
