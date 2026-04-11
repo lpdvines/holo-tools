@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LSA Leads — HOLO Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .controls { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 8px; }
+    .controls .form-row { margin-bottom: 0; flex: 1; min-width: 140px; }
+    .stat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .mini-stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; }
+    .mini-stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .mini-stat-value { font-size: 22px; font-weight: 700; color: var(--text-heading); letter-spacing: -0.3px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+    tr:hover td { background: var(--bg-card-hover); }
+    .lead-status { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+    .lead-charged { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+    .lead-uncharged { background: rgba(122, 122, 144, 0.15); color: #9898b0; }
+    .lead-disputed { background: rgba(234, 179, 8, 0.15); color: #fbbf24; }
+    .lead-type { font-size: 11px; padding: 2px 8px; border-radius: 12px; background: rgba(99, 102, 241, 0.15); color: #818cf8; font-weight: 500; }
+    .no-data { text-align: center; padding: 40px; color: var(--text-muted); font-size: 14px; }
+    .info-banner { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.25); color: #60a5fa; padding: 14px 18px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="/">HOLO <span>Digital</span></a>
+    <span class="header-tag">LSA Leads</span>
+  </header>
+  <main>
+    <h1 class="page-title">Local Service Ads — Lead Tracker</h1>
+    <p class="page-subtitle">View and track leads from Google Local Service Ads (Google Guaranteed).</p>
+
+    <div class="panel" style="max-width:960px;">
+      <div class="controls">
+        <div class="form-row" style="min-width:140px;flex:0 0 auto;">
+          <label>Start Date</label>
+          <input type="date" id="start-date">
+        </div>
+        <div class="form-row" style="min-width:140px;flex:0 0 auto;">
+          <label>End Date</label>
+          <input type="date" id="end-date">
+        </div>
+        <div class="form-row">
+          <label>Search <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+          <input type="text" id="search" placeholder="Filter by customer name...">
+        </div>
+        <button class="btn btn-primary" onclick="loadLeads()" style="height:42px;">Load Leads</button>
+      </div>
+    </div>
+
+    <div id="results" class="hidden" style="max-width:960px;">
+      <div class="loading-overlay" id="loading"><div class="spinner"></div> Fetching leads...</div>
+
+      <div class="stat-row" id="stat-row"></div>
+
+      <div class="panel" style="max-width:960px;">
+        <div class="panel-title" id="table-title">Leads</div>
+        <div id="leads-table"></div>
+      </div>
+    </div>
+
+    <div class="info-banner" style="max-width:960px;margin-top:20px;">
+      <strong>Note:</strong> The Local Services API requires your Google Ads account to be linked. If you see an auth error, you may need to add the <code>adwords</code> scope to your OAuth credentials. Only accounts running Local Service Ads will return data.
+    </div>
+  </main>
+
+  <script>
+    let leads = [];
+
+    function init() {
+      const end = new Date();
+      const start = new Date(); start.setDate(start.getDate() - 30);
+      document.getElementById('start-date').value = fmt(start);
+      document.getElementById('end-date').value = fmt(end);
+    }
+
+    async function loadLeads() {
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+      const query = document.getElementById('search').value.trim();
+
+      document.getElementById('results').classList.remove('hidden');
+      document.getElementById('loading').classList.add('visible');
+      document.getElementById('leads-table').innerHTML = '';
+
+      try {
+        let url = `/api/lsa/leads?startDate=${startDate}&endDate=${endDate}`;
+        if (query) url += `&query=${encodeURIComponent(query)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        leads = data.leads || [];
+        renderStats();
+        renderTable();
+      } catch (err) {
+        document.getElementById('leads-table').innerHTML = `<div class="no-data" style="color:#f87171;">${esc(err.message)}</div>`;
+        document.getElementById('stat-row').innerHTML = '';
+      } finally {
+        document.getElementById('loading').classList.remove('visible');
+      }
+    }
+
+    function renderStats() {
+      const total = leads.length;
+      const charged = leads.filter(l => l.charged).length;
+      const uncharged = total - charged;
+      const phone = leads.filter(l => l.phoneLead).length;
+      const message = leads.filter(l => l.messageLead).length;
+
+      document.getElementById('stat-row').innerHTML = `
+        <div class="mini-stat"><div class="mini-stat-label">Total Leads</div><div class="mini-stat-value">${total}</div></div>
+        <div class="mini-stat"><div class="mini-stat-label">Charged</div><div class="mini-stat-value">${charged}</div></div>
+        <div class="mini-stat"><div class="mini-stat-label">Not Charged</div><div class="mini-stat-value">${uncharged}</div></div>
+        <div class="mini-stat"><div class="mini-stat-label">Phone Leads</div><div class="mini-stat-value">${phone}</div></div>
+        <div class="mini-stat"><div class="mini-stat-label">Message Leads</div><div class="mini-stat-value">${message}</div></div>
+      `;
+      document.getElementById('table-title').textContent = `Leads (${total})`;
+    }
+
+    function renderTable() {
+      if (!leads.length) {
+        document.getElementById('leads-table').innerHTML = '<div class="no-data">No leads found for this period.</div>';
+        return;
+      }
+
+      document.getElementById('leads-table').innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Business</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Customer</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${leads.map(l => {
+              const date = l.creationTime ? new Date(l.creationTime).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+              const type = l.phoneLead ? 'Phone' : l.messageLead ? 'Message' : 'Other';
+              const customer = l.messageLead ? l.messageLead.customerName : '—';
+              const jobType = l.messageLead ? l.messageLead.jobType : l.leadCategory;
+              const statusClass = l.chargeStatus === 'CHARGED' ? 'lead-charged' : l.disputeStatus ? 'lead-disputed' : 'lead-uncharged';
+              const statusText = l.chargeStatus === 'CHARGED' ? 'Charged' : l.disputeStatus || 'Not charged';
+
+              return `<tr>
+                <td style="white-space:nowrap;">${date}</td>
+                <td>${esc(l.businessName)}</td>
+                <td><span class="lead-type">${type}</span></td>
+                <td>${esc(jobType || l.leadCategory || '—')}</td>
+                <td>${esc(customer)}</td>
+                <td><span class="lead-status ${statusClass}">${statusText}</span></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function fmt(d) { return d.toISOString().slice(0, 10); }
+    function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    init();
+  </script>
+</body>
+</html>

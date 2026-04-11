@@ -49,10 +49,10 @@
   },
   {
     "id": "plan-gbp",
-    "title": "Google Business Profile Post Writer",
-    "description": "Generate weekly GBP posts per client with CTA and image suggestion. Publish directly via GBP API.",
+    "title": "Google Business Profile Post Generator & Scheduler",
+    "description": "Generate GBP post text per client using Claude (tone-matched, with CTA and image suggestions). Review and edit posts before approving. Schedule approved posts to publish to specific GBP profiles via the Google Business Profile API. Needs testing before marking as done.",
     "priority": "high",
-    "status": "planned",
+    "status": "in-progress",
     "createdAt": "2026-04-10"
   },
   {
@@ -62,6 +62,22 @@
     "priority": "high",
     "status": "planned",
     "createdAt": "2026-04-10"
+  },
+  {
+    "id": "done-lsa",
+    "title": "LSA Lead Tracker",
+    "description": "Track leads from Google Local Service Ads (Google Guaranteed). View lead type, charge status and customer details.",
+    "priority": "high",
+    "status": "done",
+    "createdAt": "2026-04-11"
+  },
+  {
+    "id": "done-clients",
+    "title": "Client Management & Onboarding",
+    "description": "Manage client profiles, onboard new clients, and configure integrations. Full CRUD with all fields.",
+    "priority": "high",
+    "status": "done",
+    "createdAt": "2026-04-11"
   },
   {
     "id": "plan-leads",
@@ -84,7 +100,7 @@
     "title": "Google Search Console Integration",
     "description": "Pull keyword rankings, clicks, impressions per page per client. Feed into reports and content decisions.",
     "priority": "medium",
-    "status": "planned",
+    "status": "done",
     "createdAt": "2026-04-10"
   },
   {
@@ -92,7 +108,7 @@
     "title": "Google Analytics (GA4) Integration",
     "description": "Pull traffic and conversion data per client for reporting.",
     "priority": "medium",
-    "status": "planned",
+    "status": "done",
     "createdAt": "2026-04-10"
   },
   {

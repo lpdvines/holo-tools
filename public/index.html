@@ -10,14 +10,16 @@
   <link rel="stylesheet" href="/style.css">
   <style>
     .usage-section {
-      margin-top: 48px;
-      padding-top: 32px;
+      margin-top: 52px;
+      padding-top: 36px;
       border-top: 1px solid var(--border);
     }
     .usage-title {
-      font-size: 18px;
+      font-size: 22px;
       font-weight: 700;
       margin-bottom: 6px;
+      letter-spacing: -0.3px;
+      color: var(--text-heading);
     }
     .usage-subtitle {
       font-size: 14px;
@@ -26,28 +28,50 @@
     }
     .stat-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 16px;
       margin-bottom: 28px;
     }
     .stat-card {
-      background: #fff;
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px 20px;
+      border-radius: var(--radius-md);
+      padding: 22px 24px;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), #a855f7);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .stat-card:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-hover);
+    }
+    .stat-card:hover::after {
+      opacity: 1;
     }
     .stat-label {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 6px;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
     }
     .stat-value {
-      font-size: 26px;
+      font-size: 30px;
       font-weight: 700;
-      color: var(--text);
+      color: var(--text-heading);
+      letter-spacing: -0.5px;
     }
     .stat-value small {
       font-size: 14px;
@@ -58,22 +82,22 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
     }
     @media (max-width: 640px) { .usage-grid { grid-template-columns: 1fr; } }
     .usage-panel {
-      background: #fff;
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
+      border-radius: var(--radius-md);
+      padding: 22px;
     }
     .usage-panel-title {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
       color: var(--text-muted);
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
     .bar-row {
       display: flex;
@@ -89,16 +113,16 @@
     }
     .bar-track {
       flex: 1;
-      height: 8px;
-      background: var(--bg-subtle);
-      border-radius: 4px;
+      height: 6px;
+      background: var(--bg-elevated);
+      border-radius: 3px;
       overflow: hidden;
     }
     .bar-fill {
       height: 100%;
-      background: var(--accent);
-      border-radius: 4px;
-      transition: width 0.3s;
+      background: linear-gradient(90deg, var(--accent), #a855f7);
+      border-radius: 3px;
+      transition: width 0.4s ease;
     }
     .bar-value {
       font-size: 12px;
@@ -108,7 +132,7 @@
       text-align: right;
     }
     .chart-area {
-      height: 120px;
+      height: 130px;
       display: flex;
       align-items: flex-end;
       gap: 3px;
@@ -125,10 +149,13 @@
     .chart-bar {
       width: 100%;
       max-width: 24px;
-      background: var(--accent);
-      border-radius: 3px 3px 0 0;
+      background: linear-gradient(180deg, var(--accent), #a855f7);
+      border-radius: 4px 4px 0 0;
       min-height: 2px;
-      opacity: 0.7;
+      transition: all 0.3s ease;
+    }
+    .chart-bar:hover {
+      box-shadow: 0 0 8px rgba(255, 73, 124, 0.4);
     }
     .chart-date {
       font-size: 9px;
@@ -142,7 +169,7 @@
     .no-data {
       font-size: 13px;
       color: var(--text-muted);
-      padding: 20px 0;
+      padding: 24px 0;
     }
   </style>
 </head>
@@ -158,6 +185,20 @@
     <p class="page-subtitle">Internal tools for the HOLO Digital team.</p>
 
     <div class="tools-grid">
+
+      <!-- Clients -->
+      <div class="tool-card">
+        <div class="tool-icon">👥</div>
+        <div class="tool-name">Clients</div>
+        <p class="tool-desc">Manage client profiles, onboard new clients, and configure integrations. All client data in one place.</p>
+        <div class="tool-footer">
+          <div class="status status-active">
+            <span class="status-dot"></span>
+            Active
+          </div>
+          <a href="/tools/clients.html" class="btn btn-primary">Open</a>
+        </div>
+      </div>
 
       <!-- Google Ads Copy Generator -->
       <div class="tool-card">
@@ -198,6 +239,62 @@
             Active
           </div>
           <a href="/tools/roadmap.html" class="btn btn-primary">Open</a>
+        </div>
+      </div>
+
+      <!-- GBP Posts -->
+      <div class="tool-card">
+        <div class="tool-icon">📍</div>
+        <div class="tool-name">GBP Posts</div>
+        <p class="tool-desc">Generate, review and schedule Google Business Profile posts for clients. Matched to each client's tone of voice with CTA and image suggestions.</p>
+        <div class="tool-footer">
+          <div class="status status-active">
+            <span class="status-dot"></span>
+            Active
+          </div>
+          <a href="/tools/gbp.html" class="btn btn-primary">Open</a>
+        </div>
+      </div>
+
+      <!-- Search Console -->
+      <div class="tool-card">
+        <div class="tool-icon">🔍</div>
+        <div class="tool-name">Search Console</div>
+        <p class="tool-desc">Keyword rankings, clicks and impressions from Google Search Console. See what queries clients rank for and which pages perform best.</p>
+        <div class="tool-footer">
+          <div class="status status-active">
+            <span class="status-dot"></span>
+            Active
+          </div>
+          <a href="/tools/gsc.html" class="btn btn-primary">Open</a>
+        </div>
+      </div>
+
+      <!-- Google Analytics -->
+      <div class="tool-card">
+        <div class="tool-icon">📊</div>
+        <div class="tool-name">Analytics (GA4)</div>
+        <p class="tool-desc">Traffic, users, page views and sources from Google Analytics. See daily trends and top-performing pages per client.</p>
+        <div class="tool-footer">
+          <div class="status status-active">
+            <span class="status-dot"></span>
+            Active
+          </div>
+          <a href="/tools/ga4.html" class="btn btn-primary">Open</a>
+        </div>
+      </div>
+
+      <!-- LSA Leads -->
+      <div class="tool-card">
+        <div class="tool-icon">🛡️</div>
+        <div class="tool-name">LSA Lead Tracker</div>
+        <p class="tool-desc">Track leads from Google Local Service Ads (Google Guaranteed). View lead type, charge status and customer details.</p>
+        <div class="tool-footer">
+          <div class="status status-active">
+            <span class="status-dot"></span>
+            Active
+          </div>
+          <a href="/tools/lsa.html" class="btn btn-primary">Open</a>
         </div>
       </div>
 
@@ -265,6 +362,10 @@
       'ads': 'Google Ads Copy',
       'content': 'Content Generator',
       'blog-ideas': 'Blog Ideas',
+      'gbp-posts': 'GBP Posts',
+      'gsc': 'Search Console',
+      'ga4': 'Analytics',
+      'lsa': 'LSA Leads',
     };
 
     async function loadUsage() {

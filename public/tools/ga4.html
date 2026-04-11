@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics — HOLO Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .controls { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 8px; }
+    .controls .form-row { margin-bottom: 0; flex: 1; min-width: 160px; }
+    .stat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .mini-stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; }
+    .mini-stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .mini-stat-value { font-size: 22px; font-weight: 700; color: var(--text-heading); letter-spacing: -0.3px; }
+    .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    @media (max-width: 768px) { .section-grid { grid-template-columns: 1fr; } }
+    .section-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; }
+    .section-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text); }
+    tr:hover td { background: var(--bg-card-hover); }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .page-path { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+    .no-data { text-align: center; padding: 32px; color: var(--text-muted); font-size: 13px; }
+    .chart-area { height: 140px; display: flex; align-items: flex-end; gap: 2px; margin-top: 8px; }
+    .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+    .chart-bar { width: 100%; max-width: 20px; background: linear-gradient(180deg, var(--accent), #a855f7); border-radius: 3px 3px 0 0; min-height: 2px; transition: all 0.3s; }
+    .chart-bar:hover { box-shadow: 0 0 8px rgba(255, 73, 124, 0.4); }
+    .chart-date { font-size: 8px; color: var(--text-muted); margin-top: 3px; writing-mode: vertical-lr; transform: rotate(180deg); height: 28px; overflow: hidden; }
+    .source-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .source-name { font-size: 13px; min-width: 120px; color: var(--text); }
+    .source-track { flex: 1; height: 6px; background: var(--bg-elevated); border-radius: 3px; overflow: hidden; }
+    .source-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #a855f7); border-radius: 3px; }
+    .source-val { font-size: 12px; font-weight: 600; color: var(--text-muted); min-width: 40px; text-align: right; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="/">HOLO <span>Digital</span></a>
+    <span class="header-tag">Analytics</span>
+  </header>
+  <main>
+    <h1 class="page-title">Google Analytics</h1>
+    <p class="page-subtitle">Traffic, users and page performance from GA4.</p>
+
+    <div class="panel" style="max-width:960px;">
+      <div class="controls">
+        <div class="form-row">
+          <label>Client</label>
+          <select id="client" onchange="loadData()"><option value="">Select a client...</option></select>
+        </div>
+        <div class="form-row" style="min-width:140px;flex:0 0 auto;">
+          <label>Start Date</label>
+          <input type="date" id="start-date">
+        </div>
+        <div class="form-row" style="min-width:140px;flex:0 0 auto;">
+          <label>End Date</label>
+          <input type="date" id="end-date">
+        </div>
+        <button class="btn btn-primary" onclick="loadData()" style="height:42px;">Load</button>
+      </div>
+    </div>
+
+    <div id="results" class="hidden" style="max-width:960px;">
+      <div class="loading-overlay" id="loading"><div class="spinner"></div> Loading analytics...</div>
+      <div class="stat-row" id="stat-row"></div>
+
+      <!-- Daily chart + sources -->
+      <div class="section-grid">
+        <div class="section-panel">
+          <div class="section-title">Daily Sessions</div>
+          <div id="daily-chart"><div class="no-data">Loading...</div></div>
+        </div>
+        <div class="section-panel">
+          <div class="section-title">Traffic Sources</div>
+          <div id="sources"><div class="no-data">Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- Top pages -->
+      <div class="section-panel" style="margin-bottom:20px;">
+        <div class="section-title">Top Pages</div>
+        <div id="pages-table"><div class="no-data">Loading...</div></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    async function init() {
+      const res = await fetch('/api/clients');
+      const clients = await res.json();
+      const sel = document.getElementById('client');
+      clients.filter(c => c.ga4PropertyId).forEach(c => {
+        sel.innerHTML += `<option value="${c.id}">${esc(c.name)}</option>`;
+      });
+      const end = new Date(); end.setDate(end.getDate() - 1);
+      const start = new Date(); start.setDate(start.getDate() - 30);
+      document.getElementById('start-date').value = fmt(start);
+      document.getElementById('end-date').value = fmt(end);
+    }
+
+    async function loadData() {
+      const clientId = document.getElementById('client').value;
+      if (!clientId) return;
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+      const qs = `startDate=${startDate}&endDate=${endDate}`;
+
+      document.getElementById('results').classList.remove('hidden');
+      document.getElementById('loading').classList.add('visible');
+
+      try {
+        const [overview, pages, sources, daily] = await Promise.all([
+          fetch(`/api/ga4/overview/${clientId}?${qs}`).then(r => r.json()),
+          fetch(`/api/ga4/pages/${clientId}?${qs}`).then(r => r.json()),
+          fetch(`/api/ga4/sources/${clientId}?${qs}`).then(r => r.json()),
+          fetch(`/api/ga4/daily/${clientId}?${qs}`).then(r => r.json()),
+        ]);
+
+        if (overview.error) throw new Error(overview.error);
+
+        renderOverview(overview);
+        renderDaily(daily);
+        renderSources(sources);
+        renderPages(pages);
+      } catch (err) {
+        document.getElementById('stat-row').innerHTML = `<div class="no-data" style="color:#f87171;grid-column:1/-1;">${esc(err.message)}</div>`;
+      } finally {
+        document.getElementById('loading').classList.remove('visible');
+      }
+    }
+
+    function renderOverview(data) {
+      const t = data.totals || {};
+      const metrics = [
+        ['Sessions', fmtNum(t.sessions)],
+        ['Users', fmtNum(t.totalUsers)],
+        ['New Users', fmtNum(t.newUsers)],
+        ['Page Views', fmtNum(t.screenPageViews)],
+        ['Avg Duration', fmtDuration(t.averageSessionDuration)],
+        ['Bounce Rate', t.bounceRate != null ? (t.bounceRate * 100).toFixed(1) + '%' : '—'],
+      ];
+      document.getElementById('stat-row').innerHTML = metrics.map(([l, v]) =>
+        `<div class="mini-stat"><div class="mini-stat-label">${l}</div><div class="mini-stat-value">${v}</div></div>`
+      ).join('');
+    }
+
+    function renderDaily(data) {
+      const rows = data.rows || [];
+      if (!rows.length) { document.getElementById('daily-chart').innerHTML = '<div class="no-data">No daily data.</div>'; return; }
+      const max = Math.max(...rows.map(r => r.sessions || 0));
+      document.getElementById('daily-chart').innerHTML = `<div class="chart-area">${rows.map(r => {
+        const h = max ? ((r.sessions || 0) / max * 100) : 0;
+        const d = r.date ? r.date.slice(4, 6) + '/' + r.date.slice(6) : '';
+        return `<div class="chart-bar-wrap"><div class="chart-bar" style="height:${h}%" title="${d}: ${r.sessions} sessions"></div><span class="chart-date">${d}</span></div>`;
+      }).join('')}</div>`;
+    }
+
+    function renderSources(data) {
+      const rows = data.rows || [];
+      if (!rows.length) { document.getElementById('sources').innerHTML = '<div class="no-data">No source data.</div>'; return; }
+      const max = Math.max(...rows.map(r => r.sessions || 0));
+      document.getElementById('sources').innerHTML = rows.map(r =>
+        `<div class="source-bar"><span class="source-name">${esc(r.sessionDefaultChannelGroup)}</span><div class="source-track"><div class="source-fill" style="width:${max ? (r.sessions / max * 100) : 0}%"></div></div><span class="source-val">${r.sessions}</span></div>`
+      ).join('');
+    }
+
+    function renderPages(data) {
+      const rows = data.rows || [];
+      if (!rows.length) { document.getElementById('pages-table').innerHTML = '<div class="no-data">No page data.</div>'; return; }
+      document.getElementById('pages-table').innerHTML = `<table><thead><tr><th>#</th><th>Page</th><th class="num">Sessions</th><th class="num">Views</th><th class="num">Users</th></tr></thead><tbody>${rows.map((r, i) =>
+        `<tr><td style="color:var(--text-muted)">${i + 1}</td><td class="page-path" title="${esc(r.pagePath)}">${esc(r.pagePath)}</td><td class="num">${r.sessions}</td><td class="num">${r.screenPageViews}</td><td class="num">${r.totalUsers}</td></tr>`
+      ).join('')}</tbody></table>`;
+    }
+
+    function fmtNum(n) { if (n == null) return '—'; if (n >= 1000000) return (n/1e6).toFixed(1)+'M'; if (n >= 1000) return (n/1000).toFixed(1)+'K'; return Math.round(n).toString(); }
+    function fmtDuration(s) { if (!s) return '—'; const m = Math.floor(s/60); const sec = Math.round(s%60); return `${m}m ${sec}s`; }
+    function fmt(d) { return d.toISOString().slice(0,10); }
+    function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    init();
+  </script>
+</body>
+</html>

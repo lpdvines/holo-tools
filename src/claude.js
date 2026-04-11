@@ -173,4 +173,59 @@ Respond with ONLY valid JSON in this exact format, no other text:
   return parseJSON(response.content[0].text);
 }
 
-module.exports = { generateAdsCopy, generateContent, generateBlogIdeas };
+async function generateGBPPost({ clientData, postType, topic, notes }) {
+  const typeLabel = postType === 'OFFER' ? 'an offer' : postType === 'EVENT' ? 'an event' : 'a "What\'s New" update';
+
+  const prompt = `You are a Google Business Profile post writer for a UK marketing agency. Write in British English throughout.
+
+Generate ${typeLabel} post for the following business:
+
+Client: ${clientData.name}
+Industry: ${clientData.industry}
+Tone of voice: ${clientData.toneOfVoice}
+Services: ${clientData.services.join(', ')}
+Key messages: ${clientData.keyMessages.join(', ')}
+${clientData.avoidPhrases.length ? `Phrases to avoid: ${clientData.avoidPhrases.join(', ')}` : ''}
+${clientData.targetLocations.length ? `Target locations: ${clientData.targetLocations.join(', ')}` : ''}
+${topic ? `Topic/focus: ${topic}` : ''}
+${notes ? `Additional notes: ${notes}` : ''}
+
+Requirements:
+- Google Business Profile posts have a 1,500 character limit. Keep the post between 150-300 words.
+- Write in the client's tone of voice
+- Make it engaging and encourage action
+- British English throughout
+- Include a clear call to action
+- ${postType === 'OFFER' ? 'Include offer details (what the offer is, any terms)' : ''}
+- ${postType === 'EVENT' ? 'Include event details (what, when, where)' : ''}
+
+Respond with ONLY valid JSON in this exact format, no other text:
+{
+  "summary": "The full post text (max 1500 characters)",
+  "callToAction": {
+    "actionType": "LEARN_MORE",
+    "suggestedUrl": "Suggest a relevant page URL from the client's website, or leave empty"
+  },
+  "imageSuggestion": "Brief description of an ideal image to accompany this post",
+  "postTitle": "A short title for internal reference (not published)"
+}
+
+For actionType, choose the most appropriate from: BOOK, ORDER, SHOP, LEARN_MORE, SIGN_UP, CALL`;
+
+  const response = await client.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1024,
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  track(response, 'gbp-posts', clientData);
+
+  const result = parseJSON(response.content[0].text);
+  // Enforce character limit
+  if (result.summary && result.summary.length > 1500) {
+    result.summary = result.summary.slice(0, 1500);
+  }
+  return result;
+}
+
+module.exports = { generateAdsCopy, generateContent, generateBlogIdeas, generateGBPPost };

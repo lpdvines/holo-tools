@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GBP Posts — HOLO Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    /* Post queue */
+    .queue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+    .filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-btn { padding: 6px 14px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg-subtle); font-family: inherit; font-size: 12px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all var(--transition); }
+    .filter-btn:hover { border-color: var(--border-hover); color: var(--text); }
+    .filter-btn.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+
+    .post-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 22px; margin-bottom: 14px; transition: all var(--transition); }
+    .post-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+    .post-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 10px; }
+    .post-card-title { font-size: 15px; font-weight: 600; letter-spacing: -0.1px; }
+    .post-card-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .post-status { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+    .status-draft { background: rgba(122, 122, 144, 0.15); color: #9898b0; }
+    .status-approved { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .status-scheduled { background: rgba(234, 179, 8, 0.15); color: #fbbf24; }
+    .status-published { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+    .status-rejected { background: rgba(220, 38, 38, 0.15); color: #f87171; }
+    .status-failed { background: rgba(220, 38, 38, 0.15); color: #f87171; }
+
+    .post-summary { font-size: 14px; line-height: 1.7; margin-bottom: 12px; white-space: pre-wrap; color: var(--text); }
+    .post-summary textarea { width: 100%; min-height: 120px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 14px; line-height: 1.7; outline: none; resize: vertical; color: var(--text); transition: border-color var(--transition), box-shadow var(--transition); }
+    .post-summary textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 73, 124, 0.1); }
+
+    .post-detail { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+    .post-detail-item { font-size: 12px; }
+    .post-detail-label { font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .post-detail-value { color: var(--text); margin-top: 2px; }
+
+    .char-count { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+    .char-count.over { color: #dc2626; font-weight: 600; }
+
+    .post-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .post-action-btn { padding: 7px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-elevated); font-family: inherit; font-size: 13px; cursor: pointer; color: var(--text); font-weight: 500; transition: all var(--transition); }
+    .post-action-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+    .post-action-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 2px 8px rgba(255, 73, 124, 0.3); }
+    .post-action-btn.primary:hover { background: var(--accent-hover); box-shadow: 0 4px 16px rgba(255, 73, 124, 0.4); }
+    .post-action-btn.danger { color: #f87171; }
+    .post-action-btn.danger:hover { border-color: rgba(220, 38, 38, 0.5); background: rgba(220, 38, 38, 0.1); }
+
+    .schedule-row { display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+    .schedule-row input[type="datetime-local"] { padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; outline: none; transition: border-color var(--transition), box-shadow var(--transition); }
+    .schedule-row input[type="datetime-local"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 73, 124, 0.1); }
+
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); font-size: 14px; }
+    .empty-state-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
+
+    .image-suggestion { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5; }
+    .image-suggestion strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="logo" href="/">HOLO <span>Digital</span></a>
+    <span class="header-tag">GBP Posts</span>
+  </header>
+
+  <main>
+    <h1 class="page-title">Google Business Profile Posts</h1>
+    <p class="page-subtitle">Generate, review and schedule posts for client GBP profiles.</p>
+
+    <!-- Generate panel -->
+    <div class="panel" id="generate-panel">
+      <div class="panel-title">Generate a Post</div>
+
+      <div class="form-row">
+        <label for="client">Client</label>
+        <select id="client">
+          <option value="">Select a client...</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Post type</label>
+        <div class="type-toggle">
+          <button class="type-btn active" id="btn-STANDARD" onclick="setPostType('STANDARD')">What's New</button>
+          <button class="type-btn" id="btn-OFFER" onclick="setPostType('OFFER')">Offer</button>
+          <button class="type-btn" id="btn-EVENT" onclick="setPostType('EVENT')">Event</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="topic">Topic / focus <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+        <input type="text" id="topic" placeholder="e.g. Spring promotion, new service launch...">
+      </div>
+
+      <div class="form-row">
+        <label for="notes">Additional notes <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+        <textarea id="notes" placeholder="Any specific details, offers, dates to include..."></textarea>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center;">
+        <button class="btn btn-primary" id="generate-btn" onclick="generatePost()">Generate Post</button>
+        <div class="loading-overlay" id="gen-loading">
+          <div class="spinner"></div>
+          <span>Generating...</span>
+        </div>
+      </div>
+
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <!-- Post queue -->
+    <div class="panel" style="max-width:780px;">
+      <div class="queue-header">
+        <div class="panel-title" style="margin-bottom:0;">Post Queue</div>
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="setFilter('all')">All</button>
+          <button class="filter-btn" onclick="setFilter('draft')">Drafts</button>
+          <button class="filter-btn" onclick="setFilter('approved')">Approved</button>
+          <button class="filter-btn" onclick="setFilter('scheduled')">Scheduled</button>
+          <button class="filter-btn" onclick="setFilter('published')">Published</button>
+        </div>
+      </div>
+
+      <div id="posts-list">
+        <div class="empty-state">
+          <div class="empty-state-icon">📍</div>
+          No posts yet. Generate one above to get started.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let posts = [];
+    let currentFilter = 'all';
+    let postType = 'STANDARD';
+    let editingPostId = null;
+
+    async function init() {
+      await loadClients();
+      await loadPosts();
+    }
+
+    async function loadClients() {
+      const res = await fetch('/api/clients');
+      const clients = await res.json();
+      const select = document.getElementById('client');
+      clients.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        select.appendChild(opt);
+      });
+    }
+
+    async function loadPosts() {
+      const res = await fetch('/api/gbp/posts');
+      posts = await res.json();
+      renderPosts();
+    }
+
+    function setPostType(type) {
+      postType = type;
+      document.querySelectorAll('.type-toggle .type-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.id === `btn-${type}`);
+      });
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderPosts();
+    }
+
+    async function generatePost() {
+      const clientId = document.getElementById('client').value;
+      if (!clientId) return alert('Please select a client.');
+
+      const topic = document.getElementById('topic').value.trim();
+      const notes = document.getElementById('notes').value.trim();
+
+      document.getElementById('generate-btn').disabled = true;
+      document.getElementById('gen-loading').classList.add('visible');
+      document.getElementById('error-msg').classList.remove('visible');
+
+      try {
+        const res = await fetch('/api/gbp/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientId, postType, topic, notes }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Generation failed');
+        }
+
+        const post = await res.json();
+        posts.unshift(post);
+        renderPosts();
+
+        document.getElementById('topic').value = '';
+        document.getElementById('notes').value = '';
+      } catch (err) {
+        document.getElementById('error-msg').textContent = err.message;
+        document.getElementById('error-msg').classList.add('visible');
+      } finally {
+        document.getElementById('generate-btn').disabled = false;
+        document.getElementById('gen-loading').classList.remove('visible');
+      }
+    }
+
+    function renderPosts() {
+      const list = document.getElementById('posts-list');
+      let filtered = posts;
+      if (currentFilter !== 'all') {
+        filtered = posts.filter(p => p.status === currentFilter);
+      }
+
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📍</div>${currentFilter === 'all' ? 'No posts yet. Generate one above to get started.' : `No ${currentFilter} posts.`}</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(p => renderPostCard(p)).join('');
+    }
+
+    function renderPostCard(p) {
+      const isEditing = editingPostId === p.id;
+      const charCount = (p.summary || '').length;
+      const isOver = charCount > 1500;
+
+      const typeLabels = { STANDARD: "What's New", OFFER: 'Offer', EVENT: 'Event' };
+      const statusClass = `status-${p.status}`;
+
+      const summaryHtml = isEditing
+        ? `<div class="post-summary">
+            <textarea id="edit-summary-${p.id}" oninput="updateCharCount('${p.id}')">${esc(p.summary)}</textarea>
+            <div class="char-count ${isOver ? 'over' : ''}" id="char-count-${p.id}">${charCount} / 1,500 characters</div>
+           </div>`
+        : `<div class="post-summary">${esc(p.summary)}</div>
+           <div class="char-count">${charCount} / 1,500 characters</div>`;
+
+      let detailsHtml = '';
+      if (p.callToAction) {
+        detailsHtml += `<div class="post-detail-item"><div class="post-detail-label">CTA</div><div class="post-detail-value">${esc(p.callToAction.actionType || '')}${p.callToAction.suggestedUrl ? ' — ' + esc(p.callToAction.suggestedUrl) : ''}</div></div>`;
+      }
+      if (p.imageSuggestion) {
+        detailsHtml = `<div class="image-suggestion"><strong>Image suggestion:</strong> ${esc(p.imageSuggestion)}</div>` + detailsHtml;
+      }
+
+      let actionsHtml = '';
+      if (p.status === 'draft') {
+        if (isEditing) {
+          actionsHtml = `
+            <button class="post-action-btn primary" onclick="saveEdit('${p.id}')">Save</button>
+            <button class="post-action-btn" onclick="cancelEdit()">Cancel</button>
+          `;
+        } else {
+          actionsHtml = `
+            <button class="post-action-btn primary" onclick="approvePost('${p.id}')">Approve</button>
+            <button class="post-action-btn" onclick="startEdit('${p.id}')">Edit</button>
+            <button class="post-action-btn danger" onclick="rejectPost('${p.id}')">Reject</button>
+            <button class="post-action-btn danger" onclick="deletePost('${p.id}')">Delete</button>
+          `;
+        }
+      } else if (p.status === 'approved') {
+        actionsHtml = `
+          <button class="post-action-btn primary" onclick="showSchedule('${p.id}')">Schedule</button>
+          <button class="post-action-btn" onclick="publishNow('${p.id}')">Publish Now</button>
+          <button class="post-action-btn" onclick="updateStatus('${p.id}', 'draft')">Back to Draft</button>
+          <button class="post-action-btn danger" onclick="deletePost('${p.id}')">Delete</button>
+        `;
+      } else if (p.status === 'scheduled') {
+        actionsHtml = `
+          <button class="post-action-btn" onclick="updateStatus('${p.id}', 'approved')">Unschedule</button>
+          <button class="post-action-btn danger" onclick="deletePost('${p.id}')">Delete</button>
+        `;
+      } else if (p.status === 'published') {
+        actionsHtml = `<span style="font-size:12px;color:var(--text-muted);">Published ${p.publishedAt ? formatDate(p.publishedAt) : ''}</span>`;
+      } else if (p.status === 'rejected') {
+        actionsHtml = `
+          <button class="post-action-btn" onclick="updateStatus('${p.id}', 'draft')">Reopen</button>
+          <button class="post-action-btn danger" onclick="deletePost('${p.id}')">Delete</button>
+        `;
+      } else if (p.status === 'failed') {
+        actionsHtml = `
+          <button class="post-action-btn" onclick="publishNow('${p.id}')">Retry</button>
+          <button class="post-action-btn" onclick="updateStatus('${p.id}', 'draft')">Back to Draft</button>
+          <span style="font-size:12px;color:#dc2626;">${p.error ? esc(p.error) : 'Publishing failed'}</span>
+        `;
+      }
+
+      let scheduleHtml = '';
+      if (p.status === 'scheduled' && p.scheduledAt) {
+        scheduleHtml = `<div style="font-size:12px;color:#d97706;margin-bottom:8px;padding:6px 10px;background:#fffbeb;border-radius:6px;display:inline-block;">Scheduled for ${formatDate(p.scheduledAt)}</div>`;
+      }
+
+      return `
+        <div class="post-card" id="post-${p.id}">
+          <div class="post-card-header">
+            <div>
+              <div class="post-card-title">${esc(p.postTitle || 'Untitled Post')}</div>
+              <div class="post-card-meta">${esc(p.clientName)} &middot; ${typeLabels[p.postType] || p.postType} &middot; ${formatDate(p.createdAt)}</div>
+            </div>
+            <span class="post-status ${statusClass}">${p.status}</span>
+          </div>
+          ${summaryHtml}
+          ${detailsHtml}
+          ${scheduleHtml}
+          <div id="schedule-row-${p.id}" class="schedule-row hidden"></div>
+          <div class="post-actions">${actionsHtml}</div>
+        </div>
+      `;
+    }
+
+    function startEdit(postId) {
+      editingPostId = postId;
+      renderPosts();
+      const textarea = document.getElementById(`edit-summary-${postId}`);
+      if (textarea) textarea.focus();
+    }
+
+    function cancelEdit() {
+      editingPostId = null;
+      renderPosts();
+    }
+
+    async function saveEdit(postId) {
+      const textarea = document.getElementById(`edit-summary-${postId}`);
+      if (!textarea) return;
+      const summary = textarea.value.trim();
+      if (!summary) return;
+
+      await fetch(`/api/gbp/posts/${postId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ summary }),
+      });
+
+      const post = posts.find(p => p.id === postId);
+      if (post) post.summary = summary;
+      editingPostId = null;
+      renderPosts();
+    }
+
+    function updateCharCount(postId) {
+      const textarea = document.getElementById(`edit-summary-${postId}`);
+      const counter = document.getElementById(`char-count-${postId}`);
+      if (!textarea || !counter) return;
+      const len = textarea.value.length;
+      counter.textContent = `${len.toLocaleString()} / 1,500 characters`;
+      counter.className = `char-count ${len > 1500 ? 'over' : ''}`;
+    }
+
+    async function approvePost(postId) { await updateStatus(postId, 'approved'); }
+    async function rejectPost(postId) { await updateStatus(postId, 'rejected'); }
+
+    async function updateStatus(postId, status) {
+      await fetch(`/api/gbp/posts/${postId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      const post = posts.find(p => p.id === postId);
+      if (post) post.status = status;
+      renderPosts();
+    }
+
+    async function deletePost(postId) {
+      if (!confirm('Delete this post?')) return;
+      await fetch(`/api/gbp/posts/${postId}`, { method: 'DELETE' });
+      posts = posts.filter(p => p.id !== postId);
+      renderPosts();
+    }
+
+    function showSchedule(postId) {
+      const row = document.getElementById(`schedule-row-${postId}`);
+      if (!row) return;
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(9, 0, 0, 0);
+      const defaultVal = tomorrow.toISOString().slice(0, 16);
+
+      row.classList.remove('hidden');
+      row.innerHTML = `
+        <input type="datetime-local" id="schedule-date-${postId}" value="${defaultVal}">
+        <button class="post-action-btn primary" onclick="schedulePost('${postId}')">Confirm</button>
+        <button class="post-action-btn" onclick="document.getElementById('schedule-row-${postId}').classList.add('hidden')">Cancel</button>
+      `;
+    }
+
+    async function schedulePost(postId) {
+      const input = document.getElementById(`schedule-date-${postId}`);
+      if (!input || !input.value) return;
+      const scheduledAt = new Date(input.value).toISOString();
+
+      await fetch(`/api/gbp/posts/${postId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'scheduled', scheduledAt }),
+      });
+
+      const post = posts.find(p => p.id === postId);
+      if (post) { post.status = 'scheduled'; post.scheduledAt = scheduledAt; }
+      renderPosts();
+    }
+
+    async function publishNow(postId) {
+      const post = posts.find(p => p.id === postId);
+      if (!post) return;
+
+      if (!post.gbpAccountId || !post.gbpLocationId) {
+        alert('This client does not have a GBP account and location configured yet. The post has been approved — configure the GBP details in clients.json first.');
+        return;
+      }
+
+      if (!confirm('Publish this post to Google Business Profile now?')) return;
+
+      try {
+        const res = await fetch(`/api/gbp/posts/${postId}/publish`, { method: 'POST' });
+        if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Publish failed'); }
+        const updated = await res.json();
+        const idx = posts.findIndex(p => p.id === postId);
+        if (idx !== -1) posts[idx] = updated;
+        renderPosts();
+      } catch (err) {
+        alert('Failed to publish: ' + err.message);
+      }
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function esc(s) {
+      return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    init();
+  </script>
+</body>
+</html>

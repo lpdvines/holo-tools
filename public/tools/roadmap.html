@@ -10,48 +10,45 @@
   <link rel="stylesheet" href="/style.css">
   <style>
     .roadmap-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-    .add-btn { background: var(--accent); color: #fff; border: none; padding: 9px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; }
-    .add-btn:hover { background: var(--accent-hover); }
 
     .columns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
     @media (max-width: 900px) { .columns { grid-template-columns: 1fr; } }
 
-    .column { background: var(--bg-subtle); border-radius: 12px; padding: 16px; min-height: 200px; }
-    .column-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .column { background: var(--bg-subtle); border-radius: var(--radius-lg); padding: 18px; min-height: 200px; }
+    .column-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
     .column-count { background: var(--border); border-radius: 10px; padding: 1px 8px; font-size: 11px; font-weight: 600; }
 
-    .task-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; cursor: grab; transition: box-shadow 0.15s, transform 0.15s; }
-    .task-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .task-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 18px; margin-bottom: 10px; cursor: grab; transition: box-shadow var(--transition), transform var(--transition); box-shadow: var(--shadow-sm); }
+    .task-card:hover { box-shadow: var(--shadow-md); }
     .task-card.dragging { opacity: 0.5; transform: rotate(2deg); }
-    .task-card-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .task-card-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.1px; }
     .task-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px; }
     .task-card-footer { display: flex; justify-content: space-between; align-items: center; }
-    .task-priority { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
-    .priority-high { background: #fef2f2; color: #dc2626; }
-    .priority-medium { background: #fffbeb; color: #d97706; }
-    .priority-low { background: #f0fdf4; color: #16a34a; }
+    .task-priority { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+    .priority-high { background: rgba(220, 38, 38, 0.15); color: #f87171; }
+    .priority-medium { background: rgba(234, 179, 8, 0.15); color: #fbbf24; }
+    .priority-low { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
     .task-actions { display: flex; gap: 4px; }
-    .task-action-btn { background: none; border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; font-size: 11px; cursor: pointer; color: var(--text-muted); font-family: inherit; }
+    .task-action-btn { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 10px; font-size: 11px; cursor: pointer; color: var(--text-muted); font-family: inherit; font-weight: 500; transition: all var(--transition); }
     .task-action-btn:hover { border-color: var(--accent); color: var(--accent); }
     .task-action-btn.delete:hover { border-color: #dc2626; color: #dc2626; }
     .task-date { font-size: 10px; color: var(--text-muted); margin-top: 6px; }
 
     /* Modal */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 100; align-items: center; justify-content: center; }
     .modal-overlay.visible { display: flex; }
-    .modal { background: #fff; border-radius: 12px; padding: 28px; width: 90%; max-width: 480px; box-shadow: 0 16px 48px rgba(0,0,0,0.15); }
-    .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 20px; }
+    .modal { background: var(--bg-card); border-radius: var(--radius-lg); padding: 28px; width: 90%; max-width: 480px; box-shadow: var(--shadow-lg); }
+    .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.2px; }
     .modal .form-row { margin-bottom: 14px; }
     .modal .form-row label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
-    .modal .form-row input, .modal .form-row textarea, .modal .form-row select { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px; outline: none; }
-    .modal .form-row input:focus, .modal .form-row textarea:focus, .modal .form-row select:focus { border-color: var(--accent); }
+    .modal .form-row input, .modal .form-row textarea, .modal .form-row select { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 14px; outline: none; transition: border-color var(--transition), box-shadow var(--transition); }
+    .modal .form-row input:focus, .modal .form-row textarea:focus, .modal .form-row select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 73, 124, 0.1); }
     .modal .form-row textarea { resize: vertical; min-height: 70px; }
     .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
     .modal-actions .btn { flex: 1; text-align: center; }
-    .btn-secondary { background: var(--bg-subtle); border: 1px solid var(--border); color: var(--text); padding: 9px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; }
 
-    .drop-zone { border: 2px dashed var(--border); border-radius: 8px; min-height: 40px; transition: border-color 0.15s, background 0.15s; }
-    .drop-zone.over { border-color: var(--accent); background: #fff0f4; }
+    .drop-zone { border: 2px dashed var(--border); border-radius: var(--radius-sm); min-height: 40px; transition: border-color var(--transition), background var(--transition); }
+    .drop-zone.over { border-color: var(--accent); background: var(--accent-glow); }
   </style>
 </head>
 <body>
@@ -67,7 +64,7 @@
         <h1 class="page-title">Roadmap</h1>
         <p class="page-subtitle">Track tool ideas, features and integrations.</p>
       </div>
-      <button class="add-btn" onclick="openModal()">+ Add Idea</button>
+      <button class="btn btn-primary" onclick="openModal()">+ Add Idea</button>
     </div>
 
     <div class="columns">

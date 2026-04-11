@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Console — HOLO Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .controls { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 8px; }
+    .controls .form-row { margin-bottom: 0; flex: 1; min-width: 160px; }
+    .tab-row { display: flex; gap: 6px; margin-bottom: 20px; }
+    .tab-btn { padding: 7px 16px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg-subtle); font-family: inherit; font-size: 13px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all var(--transition); }
+    .tab-btn:hover { border-color: var(--border-hover); color: var(--text); }
+    .tab-btn.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+    tr:hover td { background: var(--bg-card-hover); }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .pos { font-weight: 600; }
+    .pos-good { color: #4ade80; }
+    .pos-mid { color: #fbbf24; }
+    .pos-low { color: var(--text-muted); }
+    .query-text { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .page-url { max-width: 350px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: var(--text-muted); }
+    .no-data { text-align: center; padding: 40px; color: var(--text-muted); }
+    .stat-row { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .mini-stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; min-width: 140px; flex: 1; }
+    .mini-stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .mini-stat-value { font-size: 22px; font-weight: 700; color: var(--text-heading); letter-spacing: -0.3px; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="/">HOLO <span>Digital</span></a>
+    <span class="header-tag">Search Console</span>
+  </header>
+  <main>
+    <h1 class="page-title">Google Search Console</h1>
+    <p class="page-subtitle">Keyword rankings, clicks and impressions from Search Console.</p>
+
+    <div class="panel" style="max-width:960px;">
+      <div class="controls">
+        <div class="form-row">
+          <label>Client</label>
+          <select id="client" onchange="loadData()"><option value="">Select a client...</option></select>
+        </div>
+        <div class="form-row" style="min-width:140px;flex:0 0 auto;">
+          <label>Start Date</label>
+          <input type="date" id="start-date">
+        </div>
+        <div class="form-row" style="min-width:140px;flex:0 0 auto;">
+          <label>End Date</label>
+          <input type="date" id="end-date">
+        </div>
+        <button class="btn btn-primary" onclick="loadData()" style="height:42px;">Load</button>
+      </div>
+    </div>
+
+    <div id="results" class="hidden" style="max-width:960px;">
+      <div class="stat-row" id="stat-row"></div>
+
+      <div class="panel" style="max-width:960px;">
+        <div class="tab-row">
+          <button class="tab-btn active" onclick="showTab('queries')">Top Queries</button>
+          <button class="tab-btn" onclick="showTab('pages')">Top Pages</button>
+        </div>
+        <div class="loading-overlay" id="loading"><div class="spinner"></div> Loading...</div>
+        <div id="table-wrap"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let queriesData = null, pagesData = null, activeTab = 'queries';
+
+    async function init() {
+      const res = await fetch('/api/clients');
+      const clients = await res.json();
+      const sel = document.getElementById('client');
+      clients.filter(c => c.searchConsoleSiteUrl).forEach(c => {
+        sel.innerHTML += `<option value="${c.id}">${esc(c.name)}</option>`;
+      });
+      // Default dates: last 28 days
+      const end = new Date(); end.setDate(end.getDate() - 1);
+      const start = new Date(); start.setDate(start.getDate() - 28);
+      document.getElementById('start-date').value = fmt(start);
+      document.getElementById('end-date').value = fmt(end);
+    }
+
+    async function loadData() {
+      const clientId = document.getElementById('client').value;
+      if (!clientId) return;
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+      document.getElementById('results').classList.remove('hidden');
+      document.getElementById('loading').classList.add('visible');
+      document.getElementById('table-wrap').innerHTML = '';
+
+      try {
+        const [qRes, pRes] = await Promise.all([
+          fetch(`/api/gsc/queries/${clientId}?startDate=${startDate}&endDate=${endDate}`).then(r => r.json()),
+          fetch(`/api/gsc/pages/${clientId}?startDate=${startDate}&endDate=${endDate}`).then(r => r.json()),
+        ]);
+        if (qRes.error) throw new Error(qRes.error);
+        queriesData = qRes; pagesData = pRes;
+
+        // Stats
+        const totalClicks = queriesData.rows.reduce((s, r) => s + r.clicks, 0);
+        const totalImpressions = queriesData.rows.reduce((s, r) => s + r.impressions, 0);
+        const avgPos = queriesData.rows.length ? (queriesData.rows.reduce((s, r) => s + r.position, 0) / queriesData.rows.length).toFixed(1) : '—';
+        const avgCtr = totalImpressions ? ((totalClicks / totalImpressions) * 100).toFixed(1) + '%' : '—';
+        document.getElementById('stat-row').innerHTML = `
+          <div class="mini-stat"><div class="mini-stat-label">Total Clicks</div><div class="mini-stat-value">${totalClicks.toLocaleString()}</div></div>
+          <div class="mini-stat"><div class="mini-stat-label">Total Impressions</div><div class="mini-stat-value">${totalImpressions.toLocaleString()}</div></div>
+          <div class="mini-stat"><div class="mini-stat-label">Avg CTR</div><div class="mini-stat-value">${avgCtr}</div></div>
+          <div class="mini-stat"><div class="mini-stat-label">Avg Position</div><div class="mini-stat-value">${avgPos}</div></div>
+        `;
+        showTab(activeTab);
+      } catch (err) {
+        document.getElementById('table-wrap').innerHTML = `<div class="no-data" style="color:#f87171;">${esc(err.message)}</div>`;
+      } finally {
+        document.getElementById('loading').classList.remove('visible');
+      }
+    }
+
+    function showTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(tab.slice(0, 4))));
+      if (tab === 'queries' && queriesData) renderQueries();
+      else if (tab === 'pages' && pagesData) renderPages();
+    }
+
+    function renderQueries() {
+      const rows = queriesData.rows;
+      if (!rows.length) { document.getElementById('table-wrap').innerHTML = '<div class="no-data">No query data found for this period.</div>'; return; }
+      document.getElementById('table-wrap').innerHTML = `<table><thead><tr><th>#</th><th>Query</th><th class="num">Clicks</th><th class="num">Impressions</th><th class="num">CTR</th><th class="num">Position</th></tr></thead><tbody>${rows.map((r, i) =>
+        `<tr><td style="color:var(--text-muted)">${i + 1}</td><td class="query-text">${esc(r.keys[0])}</td><td class="num">${r.clicks}</td><td class="num">${r.impressions.toLocaleString()}</td><td class="num">${r.ctr}%</td><td class="num pos ${posClass(r.position)}">${r.position}</td></tr>`
+      ).join('')}</tbody></table>`;
+    }
+
+    function renderPages() {
+      const rows = pagesData.rows;
+      if (!rows.length) { document.getElementById('table-wrap').innerHTML = '<div class="no-data">No page data found for this period.</div>'; return; }
+      document.getElementById('table-wrap').innerHTML = `<table><thead><tr><th>#</th><th>Page</th><th class="num">Clicks</th><th class="num">Impressions</th><th class="num">CTR</th><th class="num">Position</th></tr></thead><tbody>${rows.map((r, i) => {
+        const url = r.keys[0].replace(/^https?:\/\/[^/]+/, '');
+        return `<tr><td style="color:var(--text-muted)">${i + 1}</td><td class="page-url" title="${esc(r.keys[0])}">${esc(url || '/')}</td><td class="num">${r.clicks}</td><td class="num">${r.impressions.toLocaleString()}</td><td class="num">${r.ctr}%</td><td class="num pos ${posClass(r.position)}">${r.position}</td></tr>`;
+      }).join('')}</tbody></table>`;
+    }
+
+    function posClass(p) { return p <= 10 ? 'pos-good' : p <= 20 ? 'pos-mid' : 'pos-low'; }
+    function fmt(d) { return d.toISOString().slice(0, 10); }
+    function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    init();
+  </script>
+</body>
+</html>

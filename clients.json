@@ -2,44 +2,114 @@
   {
     "id": "kremer-signs",
     "name": "Kremer Signs",
+    "website": "",
     "industry": "Sign manufacturing and estate agent boards",
     "toneOfVoice": "Professional, established, reliable. Never overly casual.",
-    "services": ["estate agent boards", "commercial signage", "vehicle graphics"],
+    "services": [
+      "estate agent boards",
+      "commercial signage",
+      "vehicle graphics"
+    ],
     "defaultService": "estate agent boards",
     "defaultContentType": "location",
     "batchSize": 4,
     "docNameFormat": "{name} - Content {monthYear}",
-    "targetLocations": ["London", "Surrey", "Kent"],
+    "targetLocations": [
+      "London",
+      "Surrey",
+      "Kent"
+    ],
     "avoidPhrases": [],
-    "keyMessages": ["Fast turnaround", "UK manufactured", "Trusted by estate agents"],
+    "keyMessages": [
+      "Fast turnaround",
+      "UK manufactured",
+      "Trusted by estate agents"
+    ],
+    "servicesWeProvide": [
+      "seo"
+    ],
+    "monthlySpend": "",
+    "contactName": "",
+    "contactEmail": "",
+    "contactPhone": "",
+    "notes": "",
     "googleDriveFolderId": "10ed5Z7pQ4Zxbl7zJV9L_Q_qjzdXe6--1",
     "googleTrackingSheetId": "1ePF3XSAXHdeAuD_WqoyWBBcsf0DOQYJYPOtb1LJGzA4",
+    "googleAdsCustomerId": "",
+    "gbpAccountId": "",
+    "gbpLocationId": "",
+    "facebookPageId": "",
     "trelloBoardId": "",
     "trelloListId": "",
-    "trelloVaAssigneeId": ""
+    "trelloVaAssigneeId": "",
+    "internalLinks": []
   },
   {
     "id": "bison-plant-hire",
     "name": "Bison Plant Hire",
+    "website": "",
     "industry": "Plant and equipment hire",
     "toneOfVoice": "Straightforward, practical, no-nonsense. Trade-focused.",
-    "services": ["plant hire", "excavator hire", "dumper hire", "telehandler hire"],
+    "services": [
+      "plant hire",
+      "excavator hire",
+      "dumper hire",
+      "telehandler hire"
+    ],
     "defaultContentType": "blog",
     "batchSize": 4,
     "docNameFormat": "{name} - Content {monthYear}",
-    "targetLocations": ["London", "Essex", "Hertfordshire"],
+    "targetLocations": [
+      "London",
+      "Essex",
+      "Hertfordshire"
+    ],
     "avoidPhrases": [],
-    "keyMessages": ["Reliable equipment", "Competitive rates", "Quick delivery"],
+    "keyMessages": [
+      "Reliable equipment",
+      "Competitive rates",
+      "Quick delivery"
+    ],
+    "servicesWeProvide": [
+      "seo"
+    ],
+    "monthlySpend": "",
+    "contactName": "",
+    "contactEmail": "",
+    "contactPhone": "",
+    "notes": "",
     "internalLinks": [
-      { "url": "https://www.bisonplanthire.com/tracked-excavators", "label": "tracked excavators" },
-      { "url": "https://www.bisonplanthire.com/midi-excavators", "label": "midi excavators" },
-      { "url": "https://www.bisonplanthire.com/mini-excavators", "label": "mini excavators" },
-      { "url": "https://www.bisonplanthire.com/micro-excavators", "label": "micro excavators" },
-      { "url": "https://www.bisonplanthire.com/rollers", "label": "rollers" },
-      { "url": "https://www.bisonplanthire.com/dumpers", "label": "dumpers" }
+      {
+        "url": "https://www.bisonplanthire.com/tracked-excavators",
+        "label": "tracked excavators"
+      },
+      {
+        "url": "https://www.bisonplanthire.com/midi-excavators",
+        "label": "midi excavators"
+      },
+      {
+        "url": "https://www.bisonplanthire.com/mini-excavators",
+        "label": "mini excavators"
+      },
+      {
+        "url": "https://www.bisonplanthire.com/micro-excavators",
+        "label": "micro excavators"
+      },
+      {
+        "url": "https://www.bisonplanthire.com/rollers",
+        "label": "rollers"
+      },
+      {
+        "url": "https://www.bisonplanthire.com/dumpers",
+        "label": "dumpers"
+      }
     ],
     "googleDriveFolderId": "1NpvOZWbdmuk0KmE7PJJ5d2MABZNECz9X",
     "googleTrackingSheetId": "",
+    "googleAdsCustomerId": "",
+    "gbpAccountId": "",
+    "gbpLocationId": "",
+    "facebookPageId": "",
     "trelloBoardId": "",
     "trelloListId": "",
     "trelloVaAssigneeId": ""
@@ -47,14 +117,38 @@
   {
     "id": "bks-accounts",
     "name": "BKS Accounts",
+    "website": "",
     "industry": "Accountancy and bookkeeping",
     "toneOfVoice": "Professional, trustworthy, approachable. Clear and jargon-free.",
-    "services": ["bookkeeping", "tax returns", "payroll", "VAT returns", "accountancy"],
-    "targetLocations": ["London", "Surrey"],
+    "services": [
+      "bookkeeping",
+      "tax returns",
+      "payroll",
+      "VAT returns",
+      "accountancy"
+    ],
+    "targetLocations": [
+      "London",
+      "Surrey"
+    ],
     "avoidPhrases": [],
-    "keyMessages": ["Expert accountants", "Fixed fees", "Trusted by small businesses"],
+    "keyMessages": [
+      "Expert accountants",
+      "Fixed fees",
+      "Trusted by small businesses"
+    ],
+    "servicesWeProvide": [],
+    "monthlySpend": "",
+    "contactName": "",
+    "contactEmail": "",
+    "contactPhone": "",
+    "notes": "",
     "googleDriveFolderId": "1AdwaQ4btOOZiBnipPRHEdVNj3929ULUH",
     "googleTrackingSheetId": "",
+    "googleAdsCustomerId": "",
+    "gbpAccountId": "",
+    "gbpLocationId": "",
+    "facebookPageId": "",
     "trelloBoardId": "",
     "trelloListId": "",
     "trelloVaAssigneeId": ""
@@ -62,14 +156,40 @@
   {
     "id": "sms-locksmith",
     "name": "SMS Locksmith / Earlsfield Locksmith",
+    "website": "",
     "industry": "Locksmith services",
     "toneOfVoice": "Trustworthy, fast-response, local and reliable.",
-    "services": ["emergency locksmith", "lock repair", "lock replacement", "burglary repair"],
-    "targetLocations": ["Earlsfield", "Wandsworth", "Tooting", "Wimbledon", "South London"],
+    "services": [
+      "emergency locksmith",
+      "lock repair",
+      "lock replacement",
+      "burglary repair"
+    ],
+    "targetLocations": [
+      "Earlsfield",
+      "Wandsworth",
+      "Tooting",
+      "Wimbledon",
+      "South London"
+    ],
     "avoidPhrases": [],
-    "keyMessages": ["24/7 availability", "Fast response", "Local and trusted"],
+    "keyMessages": [
+      "24/7 availability",
+      "Fast response",
+      "Local and trusted"
+    ],
+    "servicesWeProvide": [],
+    "monthlySpend": "",
+    "contactName": "",
+    "contactEmail": "",
+    "contactPhone": "",
+    "notes": "",
     "googleDriveFolderId": "1bl8p3kmuZWNoSvJc9Rnj0yr5Ml5-Y1PT",
     "googleTrackingSheetId": "",
+    "googleAdsCustomerId": "",
+    "gbpAccountId": "",
+    "gbpLocationId": "",
+    "facebookPageId": "",
     "trelloBoardId": "",
     "trelloListId": "",
     "trelloVaAssigneeId": ""
@@ -77,14 +197,38 @@
   {
     "id": "t-brown-sons",
     "name": "T Brown & Sons",
+    "website": "",
     "industry": "Building and construction",
     "toneOfVoice": "Traditional, experienced, quality-focused. Family business heritage.",
-    "services": ["building work", "extensions", "refurbishments", "groundworks"],
-    "targetLocations": ["London", "Surrey", "Kent"],
+    "services": [
+      "building work",
+      "extensions",
+      "refurbishments",
+      "groundworks"
+    ],
+    "targetLocations": [
+      "London",
+      "Surrey",
+      "Kent"
+    ],
     "avoidPhrases": [],
-    "keyMessages": ["Quality craftsmanship", "Family run", "Decades of experience"],
+    "keyMessages": [
+      "Quality craftsmanship",
+      "Family run",
+      "Decades of experience"
+    ],
+    "servicesWeProvide": [],
+    "monthlySpend": "",
+    "contactName": "",
+    "contactEmail": "",
+    "contactPhone": "",
+    "notes": "",
     "googleDriveFolderId": "1chthSylpaMIz5L-TR5bvT-wh7AZTDJTB",
     "googleTrackingSheetId": "",
+    "googleAdsCustomerId": "",
+    "gbpAccountId": "",
+    "gbpLocationId": "",
+    "facebookPageId": "",
     "trelloBoardId": "",
     "trelloListId": "",
     "trelloVaAssigneeId": ""
@@ -92,14 +236,35 @@
   {
     "id": "admiral-homespace",
     "name": "Admiral Homespace",
+    "website": "",
     "industry": "Property and lettings",
     "toneOfVoice": "Professional, helpful, approachable. Clear and informative.",
-    "services": ["property management", "lettings", "property sales", "block management"],
-    "targetLocations": ["London"],
+    "services": [
+      "property management",
+      "lettings",
+      "property sales",
+      "block management"
+    ],
+    "targetLocations": [
+      "London"
+    ],
     "avoidPhrases": [],
-    "keyMessages": ["Expert property management", "Trusted by landlords and tenants"],
+    "keyMessages": [
+      "Expert property management",
+      "Trusted by landlords and tenants"
+    ],
+    "servicesWeProvide": [],
+    "monthlySpend": "",
+    "contactName": "",
+    "contactEmail": "",
+    "contactPhone": "",
+    "notes": "",
     "googleDriveFolderId": "1IHihidXaxsuL7KNBCkS7Br0fyJFmDNPU",
     "googleTrackingSheetId": "",
+    "googleAdsCustomerId": "",
+    "gbpAccountId": "",
+    "gbpLocationId": "",
+    "facebookPageId": "",
     "trelloBoardId": "",
     "trelloListId": "",
     "trelloVaAssigneeId": ""
@@ -107,14 +272,192 @@
   {
     "id": "buju",
     "name": "Buju",
+    "website": "",
     "industry": "Restaurant and food",
     "toneOfVoice": "Vibrant, passionate, community-focused. Warm and welcoming.",
-    "services": ["restaurant", "dining", "private events", "catering"],
-    "targetLocations": ["London"],
+    "services": [
+      "restaurant",
+      "dining",
+      "private events",
+      "catering"
+    ],
+    "targetLocations": [
+      "London"
+    ],
     "avoidPhrases": [],
-    "keyMessages": ["Authentic cuisine", "Vibrant atmosphere", "Community at the heart"],
+    "keyMessages": [
+      "Authentic cuisine",
+      "Vibrant atmosphere",
+      "Community at the heart"
+    ],
+    "servicesWeProvide": [],
+    "monthlySpend": "",
+    "contactName": "",
+    "contactEmail": "",
+    "contactPhone": "",
+    "notes": "",
     "googleDriveFolderId": "13e6GkBDTFghM6TSqt_UMcI9-n8nIKgO8",
     "googleTrackingSheetId": "",
+    "googleAdsCustomerId": "",
+    "gbpAccountId": "",
+    "gbpLocationId": "",
+    "facebookPageId": "",
+    "trelloBoardId": "",
+    "trelloListId": "",
+    "trelloVaAssigneeId": ""
+  },
+  {
+    "id": "ecms-ltd",
+    "name": "ECMS Ltd",
+    "website": "https://www.ecms-ltd.co.uk/",
+    "industry": "Facilities management, commercial cleaning and building maintenance",
+    "toneOfVoice": "Professional, reliable, solutions-focused. Clear and confident.",
+    "services": [
+      "commercial cleaning",
+      "facilities management",
+      "office cleaning",
+      "building maintenance",
+      "planned preventative maintenance",
+      "reactive maintenance",
+      "office fit-out",
+      "deep cleaning",
+      "washroom hygiene",
+      "window cleaning",
+      "estate cleaning",
+      "compliance maintenance",
+      "office relocation",
+      "office design and build"
+    ],
+    "defaultContentType": "location",
+    "batchSize": 4,
+    "docNameFormat": "{name} - Content {monthYear}",
+    "targetLocations": [
+      "London",
+      "Kent",
+      "Surrey",
+      "Sussex",
+      "East Sussex",
+      "West Sussex",
+      "Dartford",
+      "Sevenoaks"
+    ],
+    "avoidPhrases": [],
+    "keyMessages": [
+      "Complete facilities management",
+      "Reliable and professional",
+      "Based in Kent, serving London and the South East"
+    ],
+    "servicesWeProvide": [
+      "seo"
+    ],
+    "monthlySpend": "£1,200 inc. VAT",
+    "contactName": "",
+    "contactEmail": "",
+    "contactPhone": "",
+    "notes": "Currently SEO only. Plan to add Google Ads in the future.",
+    "googleDriveFolderId": "1O0t_3k4uWDk7FtdK9lrO3hvraDKJUJNK",
+    "googleTrackingSheetId": "1ajPqqy2gbEFc2ftWeoqG-_ngs-A1se5HoPyCMgiAB0U",
+    "googleAdsCustomerId": "",
+    "gbpAccountId": "",
+    "gbpLocationId": "",
+    "facebookPageId": "",
+    "trelloBoardId": "",
+    "trelloListId": "",
+    "trelloVaAssigneeId": ""
+  },
+  {
+    "id": "medway-locksmiths",
+    "name": "Medway Locksmiths",
+    "website": "https://medwaylocksmiths.co.uk/",
+    "industry": "Locksmith services",
+    "toneOfVoice": "Trustworthy, responsive, local expert. Straightforward and reassuring.",
+    "services": [
+      "emergency locksmith",
+      "lock repair",
+      "lock replacement",
+      "key cutting",
+      "security upgrades"
+    ],
+    "defaultContentType": "location",
+    "batchSize": 4,
+    "docNameFormat": "{name} - Content {monthYear}",
+    "targetLocations": [
+      "Medway",
+      "Kent",
+      "Rochester",
+      "Chatham",
+      "Gillingham",
+      "Strood",
+      "Rainham"
+    ],
+    "avoidPhrases": [],
+    "keyMessages": [
+      "Local and trusted",
+      "Fast response",
+      "No call-out charge"
+    ],
+    "servicesWeProvide": [
+      "seo"
+    ],
+    "monthlySpend": "£600 inc. VAT",
+    "contactName": "",
+    "contactEmail": "",
+    "contactPhone": "",
+    "notes": "SEO only. Previously ran Google Ads and Facebook Ads (£500+VAT/month for FB). May restart paid ads in the future.",
+    "googleDriveFolderId": "1lY9seLvvgQaIeQI-qv3QReKrD9szs4tK",
+    "googleTrackingSheetId": "",
+    "googleAdsCustomerId": "",
+    "gbpAccountId": "",
+    "gbpLocationId": "",
+    "facebookPageId": "",
+    "trelloBoardId": "",
+    "trelloListId": "",
+    "trelloVaAssigneeId": ""
+  },
+  {
+    "id": "south-east-tree-works",
+    "name": "South East Tree Works",
+    "website": "https://southeast-treeworks.co.uk/",
+    "industry": "Tree surgery and arboricultural services",
+    "toneOfVoice": "Professional, knowledgeable, approachable. Outdoor and practical.",
+    "services": [
+      "tree surgery",
+      "tree removal",
+      "tree pruning",
+      "hedge trimming",
+      "stump grinding",
+      "site clearance"
+    ],
+    "defaultContentType": "location",
+    "batchSize": 4,
+    "docNameFormat": "{name} - Content {monthYear}",
+    "targetLocations": [
+      "Kent",
+      "South East"
+    ],
+    "avoidPhrases": [],
+    "keyMessages": [
+      "Qualified arborists",
+      "Fully insured",
+      "Free quotes"
+    ],
+    "servicesWeProvide": [
+      "seo",
+      "google-ads",
+      "local-service-ads",
+      "facebook-ads"
+    ],
+    "monthlySpend": "£468 inc. VAT (SEO + Google Ads + LSA) + £300 inc. VAT (Facebook Ads)",
+    "contactName": "",
+    "contactEmail": "",
+    "contactPhone": "",
+    "notes": "Google Ads management, SEO and Local Service Ads at £468 inc. VAT. Facebook Ads with instant lead forms at £300 inc. VAT. Consider building a Local Service Ads management tool.",
+    "googleDriveFolderId": "1Qonl1YnLyOC-HkS8J7xqmn52S9HW06WZ",
+    "googleTrackingSheetId": "",
+    "googleAdsCustomerId": "",
+    "gbpAccountId": "",
+    "gbpLocationId": "",
+    "facebookPageId": "",
     "trelloBoardId": "",
     "trelloListId": "",
     "trelloVaAssigneeId": ""

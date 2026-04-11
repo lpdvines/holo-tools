@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clients — HOLO Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-bottom: 32px; }
+
+    .client-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; cursor: pointer; transition: all var(--transition); position: relative; overflow: hidden; }
+    .client-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), #a855f7, #6366f1); opacity: 0; transition: opacity var(--transition-slow); }
+    .client-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+    .client-card:hover::before { opacity: 1; }
+
+    .client-card-name { font-size: 16px; font-weight: 600; color: var(--text-heading); margin-bottom: 4px; letter-spacing: -0.2px; }
+    .client-card-industry { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+    .client-card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .client-tag { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: var(--accent-glow); color: var(--accent); border: 1px solid rgba(255, 73, 124, 0.2); }
+    .client-tag.seo { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-color: rgba(59, 130, 246, 0.25); }
+    .client-tag.ppc { background: rgba(234, 179, 8, 0.15); color: #fbbf24; border-color: rgba(234, 179, 8, 0.25); }
+    .client-tag.social { background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.25); }
+    .client-tag.lsa { background: rgba(34, 197, 94, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.25); }
+    .client-card-spend { font-size: 13px; color: var(--text-muted); }
+    .client-card-spend strong { color: var(--text); }
+
+    /* Detail/edit panel */
+    .detail-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 100; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+    .detail-overlay.visible { display: flex; }
+    .detail-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); width: 100%; max-width: 700px; padding: 32px; box-shadow: var(--shadow-lg); position: relative; }
+    .detail-close { position: absolute; top: 16px; right: 16px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 12px; cursor: pointer; color: var(--text-muted); font-family: inherit; font-size: 13px; transition: all var(--transition); }
+    .detail-close:hover { border-color: var(--accent); color: var(--accent); }
+
+    .detail-title { font-size: 20px; font-weight: 700; color: var(--text-heading); margin-bottom: 24px; letter-spacing: -0.3px; }
+
+    .field-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .field-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .field-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 14px; }
+
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 600px) { .field-grid { grid-template-columns: 1fr; } }
+    .field-full { grid-column: 1 / -1; }
+
+    .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .field input, .field textarea, .field select { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 14px; color: var(--text); background: var(--bg-subtle); outline: none; transition: border-color var(--transition), box-shadow var(--transition); }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .field textarea { resize: vertical; min-height: 60px; }
+    .field .help-text { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+    .field select option { background: var(--bg-card); color: var(--text); }
+
+    .checkbox-group { display: flex; gap: 10px; flex-wrap: wrap; }
+    .checkbox-pill { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg-subtle); cursor: pointer; font-size: 13px; color: var(--text-muted); transition: all var(--transition); }
+    .checkbox-pill:hover { border-color: var(--border-hover); }
+    .checkbox-pill input { accent-color: var(--accent); cursor: pointer; }
+    .checkbox-pill.checked { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+
+    .detail-actions { display: flex; gap: 10px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+    .detail-actions .btn { min-width: 120px; }
+
+    .btn-danger { background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.3); color: #f87171; padding: 9px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all var(--transition); }
+    .btn-danger:hover { background: rgba(220, 38, 38, 0.2); }
+
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); font-size: 14px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="logo" href="/">HOLO <span>Digital</span></a>
+    <span class="header-tag">Clients</span>
+  </header>
+
+  <main>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <h1 class="page-title">Clients</h1>
+        <p class="page-subtitle" style="margin-bottom:0;">Manage client profiles and onboard new clients.</p>
+      </div>
+      <button class="btn btn-primary" onclick="openNew()">+ Add Client</button>
+    </div>
+    <div style="margin-bottom:24px;"></div>
+
+    <div class="client-grid" id="client-grid">
+      <div class="empty-state">Loading clients...</div>
+    </div>
+  </main>
+
+  <!-- Detail / Edit overlay -->
+  <div class="detail-overlay" id="detail-overlay" onclick="if(event.target===this)closeDetail()">
+    <div class="detail-panel">
+      <button class="detail-close" onclick="closeDetail()">Close</button>
+      <div class="detail-title" id="detail-title">Add Client</div>
+
+      <!-- Basic info -->
+      <div class="field-section">
+        <div class="field-section-title">Basic Information</div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Business Name *</label>
+            <input type="text" id="f-name" placeholder="e.g. ECMS Ltd">
+          </div>
+          <div class="field">
+            <label>Website</label>
+            <input type="text" id="f-website" placeholder="https://...">
+          </div>
+          <div class="field field-full">
+            <label>Industry</label>
+            <input type="text" id="f-industry" placeholder="e.g. Facilities management, commercial cleaning">
+          </div>
+          <div class="field field-full">
+            <label>Tone of Voice</label>
+            <textarea id="f-tone" placeholder="e.g. Professional, reliable, solutions-focused."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Services -->
+      <div class="field-section">
+        <div class="field-section-title">Services</div>
+        <div class="field-grid">
+          <div class="field field-full">
+            <label>Client's Services</label>
+            <textarea id="f-services" placeholder="Comma-separated, e.g. commercial cleaning, facilities management, office cleaning"></textarea>
+            <div class="help-text">The services this client offers to their customers.</div>
+          </div>
+          <div class="field field-full">
+            <label>Services We Provide</label>
+            <div class="checkbox-group" id="f-services-we-provide">
+              <label class="checkbox-pill" data-val="seo"><input type="checkbox" value="seo" onchange="togglePill(this)"> SEO</label>
+              <label class="checkbox-pill" data-val="google-ads"><input type="checkbox" value="google-ads" onchange="togglePill(this)"> Google Ads</label>
+              <label class="checkbox-pill" data-val="facebook-ads"><input type="checkbox" value="facebook-ads" onchange="togglePill(this)"> Facebook Ads</label>
+              <label class="checkbox-pill" data-val="local-service-ads"><input type="checkbox" value="local-service-ads" onchange="togglePill(this)"> Local Service Ads</label>
+              <label class="checkbox-pill" data-val="social-media"><input type="checkbox" value="social-media" onchange="togglePill(this)"> Social Media</label>
+              <label class="checkbox-pill" data-val="web-design"><input type="checkbox" value="web-design" onchange="togglePill(this)"> Web Design</label>
+            </div>
+          </div>
+          <div class="field field-full">
+            <label>Key Messages</label>
+            <textarea id="f-keymessages" placeholder="Comma-separated, e.g. Fast turnaround, UK manufactured, Trusted by estate agents"></textarea>
+          </div>
+          <div class="field field-full">
+            <label>Phrases to Avoid</label>
+            <input type="text" id="f-avoid" placeholder="Comma-separated (optional)">
+          </div>
+          <div class="field field-full">
+            <label>Target Locations</label>
+            <textarea id="f-locations" placeholder="Comma-separated, e.g. London, Kent, Surrey"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Commercial -->
+      <div class="field-section">
+        <div class="field-section-title">Commercial</div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Monthly Spend</label>
+            <input type="text" id="f-spend" placeholder="e.g. £600 inc. VAT">
+          </div>
+          <div class="field">
+            <label>Contact Name</label>
+            <input type="text" id="f-contact-name">
+          </div>
+          <div class="field">
+            <label>Contact Email</label>
+            <input type="email" id="f-contact-email">
+          </div>
+          <div class="field">
+            <label>Contact Phone</label>
+            <input type="tel" id="f-contact-phone">
+          </div>
+          <div class="field field-full">
+            <label>Notes</label>
+            <textarea id="f-notes" placeholder="Any useful notes about this client..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Integrations -->
+      <div class="field-section">
+        <div class="field-section-title">Integrations</div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Google Drive Folder ID</label>
+            <input type="text" id="f-drive" placeholder="Folder ID from Drive URL">
+            <div class="help-text">The ID from the Google Drive folder URL.</div>
+          </div>
+          <div class="field">
+            <label>Tracking Sheet ID</label>
+            <input type="text" id="f-sheet" placeholder="Auto-created if blank">
+          </div>
+          <div class="field">
+            <label>Google Ads Customer ID</label>
+            <input type="text" id="f-gads" placeholder="e.g. 123-456-7890">
+          </div>
+          <div class="field">
+            <label>Facebook Page ID</label>
+            <input type="text" id="f-fb" placeholder="Page ID from Facebook">
+          </div>
+          <div class="field">
+            <label>GBP Account ID</label>
+            <input type="text" id="f-gbp-account" placeholder="e.g. accounts/123456">
+          </div>
+          <div class="field">
+            <label>GBP Location ID</label>
+            <input type="text" id="f-gbp-location" placeholder="e.g. locations/789">
+          </div>
+          <div class="field">
+            <label>Search Console Site URL</label>
+            <input type="text" id="f-gsc" placeholder="e.g. https://example.co.uk/">
+            <div class="help-text">Exact URL as it appears in Search Console.</div>
+          </div>
+          <div class="field">
+            <label>GA4 Property ID</label>
+            <input type="text" id="f-ga4" placeholder="e.g. 123456789">
+            <div class="help-text">The numeric property ID from GA4.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content settings -->
+      <div class="field-section">
+        <div class="field-section-title">Content Settings</div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Default Content Type</label>
+            <select id="f-content-type">
+              <option value="location">Location page</option>
+              <option value="service">Service page</option>
+              <option value="blog">Blog post</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Batch Size</label>
+            <input type="number" id="f-batch" min="1" max="20" value="4">
+          </div>
+          <div class="field field-full">
+            <label>Doc Name Format</label>
+            <input type="text" id="f-docformat" placeholder="{name} - Content {monthYear}">
+            <div class="help-text">Use {name} for client name, {monthYear} for date.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="btn btn-primary" id="save-btn" onclick="saveClient()">Save Client</button>
+        <button class="btn btn-secondary" onclick="closeDetail()">Cancel</button>
+        <div style="flex:1;"></div>
+        <button class="btn-danger" id="delete-btn" onclick="deleteClient()" style="display:none;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let clients = [];
+    let editingId = null;
+
+    const SERVICE_TAG_CLASSES = {
+      'seo': 'seo',
+      'google-ads': 'ppc',
+      'facebook-ads': 'social',
+      'local-service-ads': 'lsa',
+      'social-media': 'social',
+      'web-design': 'seo',
+    };
+
+    const SERVICE_LABELS = {
+      'seo': 'SEO',
+      'google-ads': 'Google Ads',
+      'facebook-ads': 'Facebook Ads',
+      'local-service-ads': 'LSA',
+      'social-media': 'Social Media',
+      'web-design': 'Web Design',
+    };
+
+    async function loadClients() {
+      const res = await fetch('/api/clients');
+      clients = await res.json();
+      renderGrid();
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('client-grid');
+      if (!clients.length) {
+        grid.innerHTML = '<div class="empty-state">No clients yet. Click "+ Add Client" to get started.</div>';
+        return;
+      }
+
+      grid.innerHTML = clients.map(c => {
+        const tags = (c.servicesWeProvide || []).map(s =>
+          `<span class="client-tag ${SERVICE_TAG_CLASSES[s] || ''}">${SERVICE_LABELS[s] || s}</span>`
+        ).join('');
+
+        return `
+          <div class="client-card" onclick="openEdit('${c.id}')">
+            <div class="client-card-name">${esc(c.name)}</div>
+            <div class="client-card-industry">${esc(c.industry || 'No industry set')}</div>
+            ${tags ? `<div class="client-card-tags">${tags}</div>` : ''}
+            ${c.monthlySpend ? `<div class="client-card-spend"><strong>${esc(c.monthlySpend)}</strong></div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openNew() {
+      editingId = null;
+      document.getElementById('detail-title').textContent = 'Add Client';
+      document.getElementById('delete-btn').style.display = 'none';
+      clearForm();
+      document.getElementById('detail-overlay').classList.add('visible');
+    }
+
+    function openEdit(id) {
+      const c = clients.find(x => x.id === id);
+      if (!c) return;
+      editingId = id;
+      document.getElementById('detail-title').textContent = c.name;
+      document.getElementById('delete-btn').style.display = 'block';
+      populateForm(c);
+      document.getElementById('detail-overlay').classList.add('visible');
+    }
+
+    function closeDetail() {
+      document.getElementById('detail-overlay').classList.remove('visible');
+      editingId = null;
+    }
+
+    function clearForm() {
+      document.getElementById('f-name').value = '';
+      document.getElementById('f-website').value = '';
+      document.getElementById('f-industry').value = '';
+      document.getElementById('f-tone').value = '';
+      document.getElementById('f-services').value = '';
+      document.getElementById('f-keymessages').value = '';
+      document.getElementById('f-avoid').value = '';
+      document.getElementById('f-locations').value = '';
+      document.getElementById('f-spend').value = '';
+      document.getElementById('f-contact-name').value = '';
+      document.getElementById('f-contact-email').value = '';
+      document.getElementById('f-contact-phone').value = '';
+      document.getElementById('f-notes').value = '';
+      document.getElementById('f-drive').value = '';
+      document.getElementById('f-sheet').value = '';
+      document.getElementById('f-gads').value = '';
+      document.getElementById('f-fb').value = '';
+      document.getElementById('f-gbp-account').value = '';
+      document.getElementById('f-gbp-location').value = '';
+      document.getElementById('f-gsc').value = '';
+      document.getElementById('f-ga4').value = '';
+      document.getElementById('f-content-type').value = 'location';
+      document.getElementById('f-batch').value = '4';
+      document.getElementById('f-docformat').value = '{name} - Content {monthYear}';
+
+      // Uncheck all service pills
+      document.querySelectorAll('#f-services-we-provide input').forEach(cb => {
+        cb.checked = false;
+        cb.closest('.checkbox-pill').classList.remove('checked');
+      });
+    }
+
+    function populateForm(c) {
+      document.getElementById('f-name').value = c.name || '';
+      document.getElementById('f-website').value = c.website || '';
+      document.getElementById('f-industry').value = c.industry || '';
+      document.getElementById('f-tone').value = c.toneOfVoice || '';
+      document.getElementById('f-services').value = (c.services || []).join(', ');
+      document.getElementById('f-keymessages').value = (c.keyMessages || []).join(', ');
+      document.getElementById('f-avoid').value = (c.avoidPhrases || []).join(', ');
+      document.getElementById('f-locations').value = (c.targetLocations || []).join(', ');
+      document.getElementById('f-spend').value = c.monthlySpend || '';
+      document.getElementById('f-contact-name').value = c.contactName || '';
+      document.getElementById('f-contact-email').value = c.contactEmail || '';
+      document.getElementById('f-contact-phone').value = c.contactPhone || '';
+      document.getElementById('f-notes').value = c.notes || '';
+      document.getElementById('f-drive').value = c.googleDriveFolderId || '';
+      document.getElementById('f-sheet').value = c.googleTrackingSheetId || '';
+      document.getElementById('f-gads').value = c.googleAdsCustomerId || '';
+      document.getElementById('f-fb').value = c.facebookPageId || '';
+      document.getElementById('f-gbp-account').value = c.gbpAccountId || '';
+      document.getElementById('f-gbp-location').value = c.gbpLocationId || '';
+      document.getElementById('f-gsc').value = c.searchConsoleSiteUrl || '';
+      document.getElementById('f-ga4').value = c.ga4PropertyId || '';
+      document.getElementById('f-content-type').value = c.defaultContentType || 'location';
+      document.getElementById('f-batch').value = c.batchSize || 4;
+      document.getElementById('f-docformat').value = c.docNameFormat || '{name} - Content {monthYear}';
+
+      // Services we provide checkboxes
+      const provided = c.servicesWeProvide || [];
+      document.querySelectorAll('#f-services-we-provide input').forEach(cb => {
+        const checked = provided.includes(cb.value);
+        cb.checked = checked;
+        cb.closest('.checkbox-pill').classList.toggle('checked', checked);
+      });
+    }
+
+    function togglePill(cb) {
+      cb.closest('.checkbox-pill').classList.toggle('checked', cb.checked);
+    }
+
+    function parseComma(val) {
+      return val.split(',').map(s => s.trim()).filter(Boolean);
+    }
+
+    function gatherFormData() {
+      const servicesWeProvide = [];
+      document.querySelectorAll('#f-services-we-provide input:checked').forEach(cb => servicesWeProvide.push(cb.value));
+
+      return {
+        name: document.getElementById('f-name').value.trim(),
+        website: document.getElementById('f-website').value.trim(),
+        industry: document.getElementById('f-industry').value.trim(),
+        toneOfVoice: document.getElementById('f-tone').value.trim(),
+        services: parseComma(document.getElementById('f-services').value),
+        keyMessages: parseComma(document.getElementById('f-keymessages').value),
+        avoidPhrases: parseComma(document.getElementById('f-avoid').value),
+        targetLocations: parseComma(document.getElementById('f-locations').value),
+        servicesWeProvide,
+        monthlySpend: document.getElementById('f-spend').value.trim(),
+        contactName: document.getElementById('f-contact-name').value.trim(),
+        contactEmail: document.getElementById('f-contact-email').value.trim(),
+        contactPhone: document.getElementById('f-contact-phone').value.trim(),
+        notes: document.getElementById('f-notes').value.trim(),
+        googleDriveFolderId: document.getElementById('f-drive').value.trim(),
+        googleTrackingSheetId: document.getElementById('f-sheet').value.trim(),
+        googleAdsCustomerId: document.getElementById('f-gads').value.trim(),
+        facebookPageId: document.getElementById('f-fb').value.trim(),
+        gbpAccountId: document.getElementById('f-gbp-account').value.trim(),
+        gbpLocationId: document.getElementById('f-gbp-location').value.trim(),
+        searchConsoleSiteUrl: document.getElementById('f-gsc').value.trim(),
+        ga4PropertyId: document.getElementById('f-ga4').value.trim(),
+        defaultContentType: document.getElementById('f-content-type').value,
+        batchSize: parseInt(document.getElementById('f-batch').value) || 4,
+        docNameFormat: document.getElementById('f-docformat').value.trim() || '{name} - Content {monthYear}',
+      };
+    }
+
+    async function saveClient() {
+      const data = gatherFormData();
+      if (!data.name) return alert('Business name is required.');
+
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const url = editingId ? `/api/clients/${editingId}` : '/api/clients';
+        const method = editingId ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Save failed');
+        }
+
+        await loadClients();
+        closeDetail();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Client';
+      }
+    }
+
+    async function deleteClient() {
+      if (!editingId) return;
+      const c = clients.find(x => x.id === editingId);
+      if (!confirm(`Delete ${c ? c.name : 'this client'}? This cannot be undone.`)) return;
+
+      try {
+        const res = await fetch(`/api/clients/${editingId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Delete failed');
+        await loadClients();
+        closeDetail();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    function esc(s) {
+      return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Keyboard shortcut
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+
+    loadClients();
+  </script>
+</body>
+</html>
