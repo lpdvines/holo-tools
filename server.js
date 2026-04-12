@@ -15,6 +15,13 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Dev proxy — when REMOTE_API_URL is set, forward all /api/* to remote server
+if (process.env.REMOTE_API_URL) {
+  const { createProxyMiddleware } = require('./src/proxy');
+  app.use(createProxyMiddleware(process.env.REMOTE_API_URL));
+  console.log(`Dev proxy active → ${process.env.REMOTE_API_URL}`);
+}
+
 function findClient(clientId) {
   const client = db.getClient(clientId);
   if (!client) throw Object.assign(new Error('Client not found'), { status: 404 });
