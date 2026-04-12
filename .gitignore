@@ -1,6 +1,9 @@
 node_modules/
 .env
 usage.json
+holo.db
+holo.db-wal
+holo.db-shm
 npm-debug.log*
 *.log
 .DS_Store

@@ -1,5 +1,9 @@
 node_modules
 .env
+holo.db
+holo.db-wal
+holo.db-shm
+usage.json
 npm-debug.log*
 *.log
 .git
